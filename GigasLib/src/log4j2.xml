@@ -21,13 +21,21 @@
 		</RollingRandomAccessFile>
 	</appenders>
 	<loggers>
-		<!-- root 所有目录实用 -->
+		<!-- root 所有目录实用 同步 -->
 		<root level="trace">
-			<appender-ref ref="Console" /><!-- Appender的引用 -->
+			<appender-ref ref="Console" />
 			<appender-ref ref="DevLog" />
 		</root>
-		<!-- 针对部分类的logger -->
+
+		<!-- root 所有目录实用 异步 -->
+		<!-- <asyncRoot level="trace"> <appender-ref ref="Console" /> <appender-ref 
+			ref="DevLog" /> </asyncRoot> -->
+
+		<!-- 针对部分类的logger 同步 -->
 		<!-- <logger name="org.gigas.log4j2.Log4J2Test" level="error" additivity="false"> 
 			<appender-ref ref="Console" /> </logger> -->
+		<!-- 针对部分类的logger 异步 -->
+		<!-- <AsyncLogger name="org.gigas.log4j2.Log4J2Test" level="error" additivity="false"> 
+			<appender-ref ref="Console" /> </AsyncLogger > -->
 	</loggers>
 </configuration> 
