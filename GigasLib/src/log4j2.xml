@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration status="OFF">
+	<!-- 常量 -->
+	<properties>
+		<property name="MAIN_LOG_PATH">./logs</property><!-- 主日志目录 -->
+		<property name="MAIN_LOG_NAME">coremain.log</property><!-- 主日志名称 -->
+	</properties>
+	<appenders>
+		<!-- 控制台 -->
+		<Console name="Console" target="SYSTEM_OUT">
+			<PatternLayout pattern="[%d{HH:mm:ss:SS} %-p:%L][%t:%logger{1}.%t()]%msg%n" />	<!-- [时间 等级:行号]线程:[类.方法]内容 -->
+		</Console>
+		<!-- 调试日志 每小时滚动一次 -->
+		<RollingRandomAccessFile name="DevLog"
+			fileName="${MAIN_LOG_PATH}/${MAIN_LOG_NAME}" filePattern="${MAIN_LOG_PATH}/${MAIN_LOG_NAME}.%d{yyyyMMddHH}">
+			<PatternLayout pattern="[%d{HH:mm:ss:SS} %-p:%L][%t:%logger{1}.%t()]%msg%n" />
+			<Policies>
+				<TimeBasedTriggeringPolicy interval="1"
+					modulate="true" />
+			</Policies>
+		</RollingRandomAccessFile>
+	</appenders>
+	<loggers>
+		<!-- root 所有目录实用 -->
+		<root level="trace">
+			<appender-ref ref="Console" /><!-- Appender的引用 -->
+			<appender-ref ref="DevLog" />
+		</root>
+		<!-- 针对部分类的logger -->
+		<!-- <logger name="org.gigas.log4j2.Log4J2Test" level="error" additivity="false"> 
+			<appender-ref ref="Console" /> </logger> -->
+	</loggers>
+</configuration> 
