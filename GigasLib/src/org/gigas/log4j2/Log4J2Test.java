@@ -7,7 +7,7 @@ import org.apache.logging.log4j.Logger;
  * Log4J2Test
  * 
  * @author hank
- * 
+ *  @since 2014-05-29 01:17:14
  */
 public class Log4J2Test {
 	private static Logger log = LogManager.getLogger(Log4J2Test.class);
