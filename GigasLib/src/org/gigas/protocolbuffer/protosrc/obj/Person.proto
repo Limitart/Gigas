@@ -1,0 +1,7 @@
+option java_package = "org.gigas.protocolbuffer.message.person";
+option java_outer_classname = "PersonMessageFactory";
+option optimize_for = LITE_RUNTIME;
+message PersonMessage{
+	required string name=1;
+	required int32 age=2;
+}

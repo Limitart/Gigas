@@ -1,0 +1,5 @@
+G:\\GitWork\\Gigas\\GigasLib\\src\\org\\gigas\\protocolbuffer\\compiler\\protoc.exe -I=G:\GitWork\Gigas\GigasLib\src\org\gigas\protocolbuffer\protosrc\obj --java_out=G:\\GitWork\\Gigas\\GigasLib\\src\\ G:\GitWork\Gigas\GigasLib\src\org\gigas\protocolbuffer\protosrc\obj\Car.proto 
+G:\\GitWork\\Gigas\\GigasLib\\src\\org\\gigas\\protocolbuffer\\compiler\\protoc.exe -I=G:\GitWork\Gigas\GigasLib\src\org\gigas\protocolbuffer\protosrc\obj --java_out=G:\\GitWork\\Gigas\\GigasLib\\src\\ G:\GitWork\Gigas\GigasLib\src\org\gigas\protocolbuffer\protosrc\obj\Dog.proto 
+G:\\GitWork\\Gigas\\GigasLib\\src\\org\\gigas\\protocolbuffer\\compiler\\protoc.exe -I=G:\GitWork\Gigas\GigasLib\src\org\gigas\protocolbuffer\protosrc\obj --java_out=G:\\GitWork\\Gigas\\GigasLib\\src\\ G:\GitWork\Gigas\GigasLib\src\org\gigas\protocolbuffer\protosrc\obj\Person.proto 
+
+pause

@@ -1,0 +1,9 @@
+option java_package = "org.gigas.protocolbuffer.message.dog";
+option java_outer_classname = "DogMessageFactory";
+option optimize_for = LITE_RUNTIME;
+message DogMessage{
+	required string name=1;
+	required int32 age=2;
+	required int64 id=3;
+	required int32 owner=4;
+}

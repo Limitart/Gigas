@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<protobufconfig>
+	<!--编译器地址-->
+	<compiler path="G:\\GitWork\\Gigas\\GigasLib\\src\\org\\gigas\\protocolbuffer\\compiler\\protoc.exe"/>
+	<!--要编译的proto源文件地址-->
+	<protosrc path="G:\\GitWork\\Gigas\\GigasLib\\src\\org\\gigas\\protocolbuffer\\protosrc\\"/>
+	<!--输出的java文件地址-->
+	<output path="G:\\GitWork\\Gigas\\GigasLib\\src\\"/>
+	<!--输出bat批处理文件地址-->
+	<batpath path="G:\\GitWork\\Gigas\\GigasLib\\"/>
+</protobufconfig>
