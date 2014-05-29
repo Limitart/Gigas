@@ -1,3 +1,5 @@
 /.settings
 /bin
 /.project
+/logs
+/.classpath
