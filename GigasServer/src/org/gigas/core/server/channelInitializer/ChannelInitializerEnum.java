@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.gigas.core.server.ChannelInitializer;
+package org.gigas.core.server.channelInitializer;
 
 /**
  * 服务器解析协议枚举

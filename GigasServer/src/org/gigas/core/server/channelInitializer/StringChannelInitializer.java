@@ -1,4 +1,4 @@
-package org.gigas.core.server.ChannelInitializer;
+package org.gigas.core.server.channelInitializer;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;

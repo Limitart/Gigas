@@ -11,10 +11,10 @@ import java.util.HashSet;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.gigas.core.server.ChannelInitializer.ByteChannelIntializer;
-import org.gigas.core.server.ChannelInitializer.ChannelInitializerEnum;
-import org.gigas.core.server.ChannelInitializer.ProtoBufChannelInitializer;
-import org.gigas.core.server.ChannelInitializer.StringChannelInitializer;
+import org.gigas.core.server.channelInitializer.ByteChannelIntializer;
+import org.gigas.core.server.channelInitializer.ChannelInitializerEnum;
+import org.gigas.core.server.channelInitializer.ProtoBufChannelInitializer;
+import org.gigas.core.server.channelInitializer.StringChannelInitializer;
 import org.gigas.core.server.config.ServerConfig;
 import org.gigas.core.server.exception.ServerException;
 import org.gigas.core.server.thread.IHandleThread;
