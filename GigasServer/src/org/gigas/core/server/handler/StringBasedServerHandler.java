@@ -1,11 +1,12 @@
 package org.gigas.core.server.handler;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.gigas.core.server.BaseServer;
 
 /**
  * 字符消息Hanlder
@@ -13,8 +14,9 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
  * @author hank
  * 
  */
+@Sharable
 public class StringBasedServerHandler extends ChannelInboundHandlerAdapter {
-	
+
 	private static Logger log = LogManager.getLogger(StringBasedServerHandler.class);
 
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
@@ -29,27 +31,28 @@ public class StringBasedServerHandler extends ChannelInboundHandlerAdapter {
 	 * 读取消息
 	 */
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-		log.info(msg);
-		ByteBuf result = (ByteBuf) msg;
-		log.info("readableBytes->" + result.readableBytes());
-		log.info("capacity->" + result.capacity());
-		log.info("isReadable->" + result.isReadable());
-		log.info("isWritable->" + result.isWritable());
-		log.info("readerIndex->" + result.readerIndex());
-		byte[] bytes = new byte[result.readableBytes()];
-		result.readBytes(bytes);
-		String str = new String(bytes);
-		ctx.write(str);
-		log.info("received->" + str);
-		result.release();
+		String str = (String) msg;
+		// decode
+		//
+		// push to cache
+		BaseServer.getInstance().addTask(str);
+		// if ("quit".equalsIgnoreCase(str)) {
+		// ctx.close();
+		// } else if ("stopserver".equalsIgnoreCase(str)) {
+		// StringBasedServer.getInstance().stopServer();
+		// } else {
+		// StringBasedServer instance = StringBasedServer.getInstance();
+		// for (Channel temp : instance.getSessions()) {
+		// temp.writeAndFlush(str);
+		// }
+		// }
+		// log.info("received->" + str);
 	}
 
 	/**
 	 * 消息读取完毕
 	 */
 	public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
-		log.info("channelReadComplete");
-		ctx.flush();
 	}
 
 	/**
@@ -57,6 +60,8 @@ public class StringBasedServerHandler extends ChannelInboundHandlerAdapter {
 	 */
 	public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
 		log.info(ctx.channel().remoteAddress() + "connected!");
+		BaseServer instance = BaseServer.getInstance();
+		instance.registerChannel(ctx.channel());
 	}
 
 	/**
@@ -64,6 +69,8 @@ public class StringBasedServerHandler extends ChannelInboundHandlerAdapter {
 	 */
 	public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
 		log.info(ctx.channel().remoteAddress() + "disconnected!");
+		BaseServer instance = BaseServer.getInstance();
+		instance.unregisterChannel(ctx.channel());
 	}
 
 	public void channelWritabilityChanged(ChannelHandlerContext ctx) throws Exception {

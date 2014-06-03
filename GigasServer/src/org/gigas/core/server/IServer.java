@@ -6,14 +6,21 @@ package org.gigas.core.server;
  * @author hank
  * 
  */
-public interface IServer extends Runnable {
+public interface IServer {
 	/**
 	 * 初始化服务器
 	 */
-	public void initServer();
-	
+	public void startServer();
+
 	/**
 	 * 停止服务器
 	 */
 	public void stopServer();
+
+	/**
+	 * 是否已经启动
+	 * 
+	 * @return
+	 */
+	public boolean isStart();
 }

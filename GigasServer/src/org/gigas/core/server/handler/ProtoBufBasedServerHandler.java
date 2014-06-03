@@ -1,11 +1,14 @@
 package org.gigas.core.server.handler;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandler.Sharable;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
+import com.google.protobuf.MessageLite;
 
 /**
  * protobuf消息Hanlder
@@ -13,6 +16,7 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
  * @author hank
  * 
  */
+@Sharable
 public class ProtoBufBasedServerHandler extends ChannelInboundHandlerAdapter {
 
 	private static Logger log = LogManager.getLogger(ProtoBufBasedServerHandler.class);
@@ -29,7 +33,7 @@ public class ProtoBufBasedServerHandler extends ChannelInboundHandlerAdapter {
 	 * 读取消息
 	 */
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-		log.info(msg);
+		MessageLite protobuf = (MessageLite)msg;
 		ByteBuf result = (ByteBuf) msg;
 		log.info("readableBytes->" + result.readableBytes());
 		log.info("capacity->" + result.capacity());
