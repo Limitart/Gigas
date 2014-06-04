@@ -1,5 +1,7 @@
 package org.gigas.core.server;
 
+import org.gigas.core.server.exception.MessageException;
+
 /**
  * 服务器接口
  * 
@@ -9,8 +11,9 @@ package org.gigas.core.server;
 public interface IServer {
 	/**
 	 * 初始化服务器
+	 * @throws MessageException 
 	 */
-	public void startServer();
+	public void startServer() throws MessageException;
 
 	/**
 	 * 停止服务器

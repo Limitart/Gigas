@@ -16,10 +16,14 @@ import org.gigas.core.server.channelInitializer.ProtoBufChannelInitializer;
 import org.gigas.core.server.channelInitializer.StringChannelInitializer;
 import org.gigas.core.server.channelInitializer.enumeration.ChannelInitializerEnum;
 import org.gigas.core.server.config.ServerConfig;
+import org.gigas.core.server.exception.MessageException;
 import org.gigas.core.server.exception.ServerException;
+import org.gigas.core.server.handler.CarHandler;
+import org.gigas.core.server.message.dictionary.ProtoBufDictionary;
 import org.gigas.core.server.thread.IHandleThread;
 import org.gigas.core.server.thread.ProtoBufBasedMessageHandleThread;
 import org.gigas.core.server.thread.StringBasedMessageHandleThread;
+import org.gigas.protocolbuffer.message.car.CarMessageFactory.CarMessage;
 
 /**
  * 服务器原型
@@ -33,6 +37,7 @@ public class BaseServer implements IServer {
 	private ServerConfig serverConfig = new ServerConfig();
 	private boolean stop = true;
 	private HashSet<Channel> channelMap = new HashSet<>();
+	private ProtoBufDictionary messageDictionary;
 	private EventLoopGroup acceptorGroup;
 	private EventLoopGroup clientGroup;
 	private ServerBootstrap bootstrap;
@@ -131,12 +136,16 @@ public class BaseServer implements IServer {
 	}
 
 	@Override
-	public void startServer() {
+	public void startServer() throws MessageException {
 		// 服务器其他线程
 		if (protocolEnum.equals(ChannelInitializerEnum.STRING_CUSTOMED)) {
 			handleThread = new StringBasedMessageHandleThread("StringMessageHandle");
 		} else if (protocolEnum.equals(ChannelInitializerEnum.GOOGLE_PROTOCOL_BUFFER)) {
 			handleThread = new ProtoBufBasedMessageHandleThread();
+			if (messageDictionary == null) {
+				throw new MessageException("messageDictionary is not set!");
+			}
+			messageDictionary.registerAllMessage();
 		} else if (protocolEnum.equals(ChannelInitializerEnum.BYTE_CUSTOMED)) {
 		}
 		((Thread) handleThread).start();
@@ -179,7 +188,28 @@ public class BaseServer implements IServer {
 		handleThread.addTask(task);
 	}
 
+	public ProtoBufDictionary getMessageDictionary() {
+		return messageDictionary;
+	}
+
+	public void setMessageDictionary(ProtoBufDictionary messageDictionary) {
+		this.messageDictionary = messageDictionary;
+	}
+
 	public static void main(String[] args) {
-		BaseServer.getInstance(8888, ChannelInitializerEnum.STRING_CUSTOMED).startServer();
+		// BaseServer.getInstance(8888,
+		// ChannelInitializerEnum.STRING_CUSTOMED).startServer();
+		try {
+			BaseServer instance = BaseServer.getInstance(8888, ChannelInitializerEnum.GOOGLE_PROTOCOL_BUFFER);
+			instance.setMessageDictionary(new ProtoBufDictionary() {
+				@Override
+				public void registerAllMessage() {
+					register(1000, CarMessage.class, CarHandler.class);
+				}
+			});
+			instance.startServer();
+		} catch (MessageException e) {
+			e.printStackTrace();
+		}
 	}
 }
