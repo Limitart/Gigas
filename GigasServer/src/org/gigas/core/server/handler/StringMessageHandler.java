@@ -15,9 +15,9 @@ import org.gigas.core.server.BaseServer;
  * 
  */
 @Sharable
-public class StringBasedServerHandler extends ChannelInboundHandlerAdapter {
+public class StringMessageHandler extends ChannelInboundHandlerAdapter {
 
-	private static Logger log = LogManager.getLogger(StringBasedServerHandler.class);
+	private static Logger log = LogManager.getLogger(StringMessageHandler.class);
 
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
 		log.info("channelActive");
@@ -35,7 +35,7 @@ public class StringBasedServerHandler extends ChannelInboundHandlerAdapter {
 		// decode
 		//
 		// push to cache
-		BaseServer.getInstance().addTask(str);
+		BaseServer.getInstance().addHandleTask(str);
 		// if ("quit".equalsIgnoreCase(str)) {
 		// ctx.close();
 		// } else if ("stopserver".equalsIgnoreCase(str)) {

@@ -7,7 +7,7 @@ import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 import io.netty.util.CharsetUtil;
 
-import org.gigas.core.server.handler.StringBasedServerHandler;
+import org.gigas.core.server.handler.StringMessageHandler;
 
 /**
  * String类简单消息channel处理链初始化
@@ -22,6 +22,6 @@ public class StringChannelInitializer extends ChannelInitializer<Channel> {
 		ch.pipeline().addLast("frameDecoder", new LineBasedFrameDecoder(Integer.MAX_VALUE));
 		ch.pipeline().addLast("stringDecoder", new StringDecoder(CharsetUtil.UTF_8));
 		ch.pipeline().addLast("stringEncoder", new StringEncoder(CharsetUtil.UTF_8));
-		ch.pipeline().addLast(new StringBasedServerHandler());
+		ch.pipeline().addLast(new StringMessageHandler());
 	}
 }

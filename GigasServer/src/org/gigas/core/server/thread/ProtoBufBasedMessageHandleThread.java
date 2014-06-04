@@ -17,10 +17,14 @@ import org.gigas.core.server.message.dictionary.ProtoBufDictionary;
  * @author hank
  * 
  */
-public class ProtoBufBasedMessageHandleThread extends Thread implements IHandleThread<ProtoBufMessageAbstract> {
-	private Logger log = LogManager.getLogger(ProtoBufBasedMessageHandleThread.class);
+public class ProtoBufBasedMessageHandleThread extends Thread implements IHandleThread {
+	private static Logger log = LogManager.getLogger(ProtoBufBasedMessageHandleThread.class);
 	private LinkedBlockingQueue<ProtoBufMessageAbstract> handleQueue = new LinkedBlockingQueue<>();
 	private boolean stop = true;
+
+	public ProtoBufBasedMessageHandleThread(String name) {
+		this.setName(name);
+	}
 
 	@Override
 	public void run() {
@@ -67,8 +71,12 @@ public class ProtoBufBasedMessageHandleThread extends Thread implements IHandleT
 	}
 
 	@Override
-	public void addTask(ProtoBufMessageAbstract t) {
-		handleQueue.add(t);
+	public void addTask(Object t) {
+		if (!(t instanceof ProtoBufMessageAbstract)) {
+			return;
+		}
+		ProtoBufMessageAbstract message = (ProtoBufMessageAbstract) t;
+		handleQueue.add(message);
 		synchronized (this) {
 			notify();
 		}

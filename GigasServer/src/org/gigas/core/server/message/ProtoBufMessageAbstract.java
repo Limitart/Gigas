@@ -13,11 +13,20 @@ import com.google.protobuf.MessageLite;
 public abstract class ProtoBufMessageAbstract implements IMessage {
 	protected MessageLite protobuf;
 	protected Channel channel;
+	protected Class<? extends MessageLite> Clazz;
 
+	public abstract Class<? extends MessageLite> getClazz();
+
+	/**
+	 * 客户端channel(永远指相对于服务器的客户端)
+	 */
 	public Channel getChannel() {
 		return channel;
 	}
 
+	/**
+	 * 客户端channel(永远指相对于服务器的客户端)
+	 */
 	public void setChannel(Channel channel) {
 		this.channel = channel;
 	}

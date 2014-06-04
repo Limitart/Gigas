@@ -8,6 +8,7 @@ package org.gigas.core.server.config;
  */
 public class ServerConfig {
 	private int port;
+	private byte[] securityBytes;
 
 	public int getPort() {
 		return port;
@@ -15,6 +16,14 @@ public class ServerConfig {
 
 	public void setPort(int port) {
 		this.port = port;
+	}
+
+	public byte[] getSecurityBytes() {
+		return securityBytes;
+	}
+
+	public void setSecurityBytes(byte[] securityBytes) {
+		this.securityBytes = securityBytes;
 	}
 
 }

@@ -8,6 +8,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.gigas.core.server.exception.MessageException;
 import org.gigas.core.server.handler.IHandler;
+import org.gigas.core.server.message.ProtoBufMessageAbstract;
 
 import com.google.protobuf.AbstractMessageLite.Builder;
 import com.google.protobuf.MessageLite;
@@ -20,7 +21,7 @@ import com.google.protobuf.MessageLite;
  */
 public abstract class ProtoBufDictionary {
 	private static Logger log = LogManager.getLogger(ProtoBufDictionary.class);
-	private HashMap<Long, Class<? extends MessageLite>> id_messageMap = new HashMap<>();
+	private HashMap<Long, ProtoBufMessageAbstract> id_messageMap = new HashMap<>();
 	private HashMap<Long, Class<? extends IHandler>> id_handlerMap = new HashMap<>();
 
 	/**
@@ -37,7 +38,8 @@ public abstract class ProtoBufDictionary {
 		if (!id_messageMap.containsKey(id)) {
 			throw new MessageException("id:" + id + " message not exist!");
 		}
-		Class<? extends MessageLite> clazz = id_messageMap.get(id);
+		ProtoBufMessageAbstract protoBufMessageAbstract = id_messageMap.get(id);
+		Class<? extends MessageLite> clazz = protoBufMessageAbstract.getClazz();
 		Builder result = null;
 		try {
 			Method declaredMethod = clazz.getDeclaredMethod("newBuilder");
@@ -94,11 +96,22 @@ public abstract class ProtoBufDictionary {
 	 * @param clazz
 	 * @throws MessageException
 	 */
-	private void putMessage(long id, Class<? extends MessageLite> messageLite) throws MessageException {
+	private void putMessage(final long id, final Class<? extends MessageLite> messageLite) throws MessageException {
 		if (id_messageMap.containsKey(id)) {
 			throw new MessageException("id:" + id + " duplicate message");
 		}
-		id_messageMap.put(id, messageLite);
+		ProtoBufMessageAbstract protoBufMessageAbstract = new ProtoBufMessageAbstract() {
+			@Override
+			public long getId() {
+				return id;
+			}
+
+			@Override
+			public Class<? extends MessageLite> getClazz() {
+				return messageLite;
+			}
+		};
+		id_messageMap.put(id, protoBufMessageAbstract);
 	}
 
 	/**

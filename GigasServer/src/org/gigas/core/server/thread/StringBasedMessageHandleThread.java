@@ -14,7 +14,7 @@ import org.gigas.core.server.BaseServer;
  * @author hank
  * 
  */
-public class StringBasedMessageHandleThread extends Thread implements IHandleThread<String> {
+public class StringBasedMessageHandleThread extends Thread implements IHandleThread {
 	private static Logger log = LogManager.getLogger(StringBasedMessageHandleThread.class);
 	private LinkedBlockingQueue<String> handleQueue = new LinkedBlockingQueue<>();
 	private boolean stop = true;
@@ -46,9 +46,13 @@ public class StringBasedMessageHandleThread extends Thread implements IHandleThr
 	}
 
 	@Override
-	public void addTask(String t) {
+	public void addTask(Object t) {
+		if (!(t instanceof String)) {
+			return;
+		}
 		try {
-			handleQueue.add(t);
+			String message = (String) t;
+			handleQueue.add(message);
 			synchronized (this) {
 				notify();
 			}

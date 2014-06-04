@@ -8,8 +8,9 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 
-import org.gigas.protocolbuffer.message.car.CarMessageFactory.CarMessage;
-import org.gigas.protocolbuffer.message.car.CarMessageFactory.CarMessage.Builder;
+import java.io.UnsupportedEncodingException;
+
+import org.gigas.test.message.CarMessageFactory.CarMessage;
 
 public class GigasClient {
 	public static void main(String[] args) {
@@ -34,6 +35,12 @@ public class GigasClient {
 		// e.printStackTrace();
 		// }
 		// }
+		byte[] secirityBytes = null;
+		try {
+			secirityBytes = "gigassecurity".getBytes("UTF-8");
+		} catch (UnsupportedEncodingException e1) {
+			e1.printStackTrace();
+		}
 		NioEventLoopGroup nioEventLoopGroup = new NioEventLoopGroup();
 		Bootstrap boot = new Bootstrap();
 		boot.group(nioEventLoopGroup);
@@ -42,24 +49,26 @@ public class GigasClient {
 		try {
 			ChannelFuture sync = boot.connect("localhost", 8888).sync();
 			Channel channel = sync.channel();
-			while (true) {
-				Builder newBuilder = CarMessage.newBuilder();
+			while (channel.isActive()) {
+				org.gigas.test.message.CarMessageFactory.CarMessage.Builder newBuilder = CarMessage.newBuilder();
 				newBuilder.setName("car");
-				newBuilder.setId(101010);
+				newBuilder.setPrice(101010);
 				newBuilder.setAge(12);
 				CarMessage build = newBuilder.build();
 				byte[] byteArray = build.toByteArray();
 				ByteBuf buf = ByteBufAllocator.DEFAULT.buffer();
 				buf.writeBytes(byteArray);
 				ByteBuf result = ByteBufAllocator.DEFAULT.buffer();
+				result.writeBytes(secirityBytes);
 				result.writeInt(8 + buf.readableBytes());
 				result.writeLong(1000);
 				result.writeBytes(buf);
 				channel.writeAndFlush(result);
 				buf.resetReaderIndex();
 				System.out.println("write");
-				Thread.sleep(100);
+				Thread.sleep(1000);
 			}
+			System.exit(0);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}

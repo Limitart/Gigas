@@ -7,7 +7,10 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.HashSet;
+import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -18,12 +21,14 @@ import org.gigas.core.server.channelInitializer.enumeration.ChannelInitializerEn
 import org.gigas.core.server.config.ServerConfig;
 import org.gigas.core.server.exception.MessageException;
 import org.gigas.core.server.exception.ServerException;
-import org.gigas.core.server.handler.CarHandler;
 import org.gigas.core.server.message.dictionary.ProtoBufDictionary;
 import org.gigas.core.server.thread.IHandleThread;
 import org.gigas.core.server.thread.ProtoBufBasedMessageHandleThread;
+import org.gigas.core.server.thread.ProtoBufBasedMessageSenderThread;
 import org.gigas.core.server.thread.StringBasedMessageHandleThread;
-import org.gigas.protocolbuffer.message.car.CarMessageFactory.CarMessage;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.input.SAXBuilder;
 
 /**
  * 服务器原型
@@ -34,34 +39,40 @@ import org.gigas.protocolbuffer.message.car.CarMessageFactory.CarMessage;
 public class BaseServer implements IServer {
 	private static Logger log = LogManager.getLogger(BaseServer.class);
 	private static final int GROUPSIZE = Runtime.getRuntime().availableProcessors() * 2; // 默认线程组个数
+	// 服务器配置信息
 	private ServerConfig serverConfig = new ServerConfig();
 	private boolean stop = true;
+	// 客户端连接集合
 	private HashSet<Channel> channelMap = new HashSet<>();
+	// 服务器消息字典
 	private ProtoBufDictionary messageDictionary;
 	private EventLoopGroup acceptorGroup;
 	private EventLoopGroup clientGroup;
 	private ServerBootstrap bootstrap;
 	private ChannelFuture channelFuture;
+	// 服务器实例
 	private static BaseServer instance;
 	private static Object lock = new Object();
+	// 服务器解析协议类型
 	private ChannelInitializerEnum protocolEnum;
-	@SuppressWarnings("rawtypes")
+	// 消息处理线程
 	private IHandleThread handleThread;
+	// 消息发送线程
+	private IHandleThread senderThread;
 
 	/**
 	 * 得到服务器实例
 	 * 
-	 * @param port
-	 *            端口
 	 * @param protocolEnum
 	 *            解析协议类型
 	 * @return
+	 * @throws ServerException
 	 */
-	public static BaseServer getInstance(int port, ChannelInitializerEnum protocolEnum) {
+	public static BaseServer getInstance(ChannelInitializerEnum protocolEnum) throws ServerException {
 		if (instance == null) {
 			synchronized (lock) {
 				if (instance == null) {
-					instance = new BaseServer(port, protocolEnum);
+					instance = new BaseServer(protocolEnum);
 				}
 			}
 		}
@@ -70,7 +81,7 @@ public class BaseServer implements IServer {
 
 	public static BaseServer getInstance() throws ServerException {
 		if (instance == null) {
-			throw (new ServerException("please call getInstance(int port) first"));
+			throw (new ServerException("please call getInstance(ChannelInitializerEnum) first,then you can user this method!"));
 		}
 		return instance;
 	}
@@ -79,10 +90,11 @@ public class BaseServer implements IServer {
 	 * 初始化服务器
 	 * 
 	 * @param port
+	 * @throws ServerException
 	 */
-	private BaseServer(int port, ChannelInitializerEnum enumeration) {
+	protected BaseServer(ChannelInitializerEnum enumeration) throws ServerException {
 		protocolEnum = enumeration;
-		serverConfig.setPort(port);
+		initServerConfig();
 		acceptorGroup = new NioEventLoopGroup(GROUPSIZE);
 		clientGroup = new NioEventLoopGroup();
 		bootstrap = new ServerBootstrap();
@@ -94,6 +106,34 @@ public class BaseServer implements IServer {
 			bootstrap.childHandler(new ProtoBufChannelInitializer());
 		} else if (enumeration.equals(ChannelInitializerEnum.BYTE_CUSTOMED)) {
 			bootstrap.childHandler(new ByteChannelIntializer());
+		}
+	}
+
+	/**
+	 * 初始化服务器配置信息
+	 * 
+	 * @throws ServerException
+	 */
+	private void initServerConfig() throws ServerException {
+		try {
+			SAXBuilder builder = new SAXBuilder();
+			InputStream file = new FileInputStream("./config/serverconfig.xml");
+			Document document = builder.build(file);
+			Element root = document.getRootElement();
+			List<Element> list = root.getChildren();
+			for (Element temp : list) {
+				String name = temp.getName();
+				if ("port".equalsIgnoreCase(name)) {
+					int port = Integer.parseInt(temp.getValue());
+					this.serverConfig.setPort(port);
+				} else if ("securityinfo".equalsIgnoreCase(name)) {
+					String sucurityStr = temp.getValue();
+					byte[] bytes = sucurityStr.getBytes("UTF-8");
+					this.serverConfig.setSecurityBytes(bytes);
+				}
+			}
+		} catch (Exception e) {
+			throw new ServerException("can not find ./config/serverconfig.xml");
 		}
 	}
 
@@ -127,7 +167,7 @@ public class BaseServer implements IServer {
 	 */
 	public HashSet<Channel> getSessions() throws ServerException {
 		if (instance == null) {
-			throw (new ServerException("please call getInstance(int port) first"));
+			throw (new ServerException("please call getInstance(ChannelInitializerEnum) first"));
 		}
 		if (!isStart()) {
 			throw (new ServerException("please start server first"));
@@ -141,14 +181,16 @@ public class BaseServer implements IServer {
 		if (protocolEnum.equals(ChannelInitializerEnum.STRING_CUSTOMED)) {
 			handleThread = new StringBasedMessageHandleThread("StringMessageHandle");
 		} else if (protocolEnum.equals(ChannelInitializerEnum.GOOGLE_PROTOCOL_BUFFER)) {
-			handleThread = new ProtoBufBasedMessageHandleThread();
+			handleThread = new ProtoBufBasedMessageHandleThread("ProtoBufMessageHandle");
+			senderThread = new ProtoBufBasedMessageSenderThread("ProtoBufMessageSender");
 			if (messageDictionary == null) {
-				throw new MessageException("messageDictionary is not set!");
+				throw new MessageException("messageDictionary is not set!please call setMessageDictionary first!");
 			}
 			messageDictionary.registerAllMessage();
 		} else if (protocolEnum.equals(ChannelInitializerEnum.BYTE_CUSTOMED)) {
 		}
 		((Thread) handleThread).start();
+		((Thread) senderThread).start();
 		// 服务器
 		Runnable runnable = new Runnable() {
 			@Override
@@ -179,13 +221,19 @@ public class BaseServer implements IServer {
 	}
 
 	/**
-	 * 添加任务
+	 * 添加消息处理任务
 	 * 
 	 * @param task
 	 */
-	@SuppressWarnings("unchecked")
-	public void addTask(Object task) {
+	public void addHandleTask(Object task) {
 		handleThread.addTask(task);
+	}
+
+	/**
+	 * 添加消息发送任务
+	 */
+	public void addSenderTask(Object tesk) {
+		senderThread.addTask(tesk);
 	}
 
 	public ProtoBufDictionary getMessageDictionary() {
@@ -196,15 +244,19 @@ public class BaseServer implements IServer {
 		this.messageDictionary = messageDictionary;
 	}
 
-	public static void main(String[] args) {
+	public ServerConfig getServerConfig() {
+		return serverConfig;
+	}
+
+	public static void main(String[] args) throws ServerException {
 		// BaseServer.getInstance(8888,
 		// ChannelInitializerEnum.STRING_CUSTOMED).startServer();
 		try {
-			BaseServer instance = BaseServer.getInstance(8888, ChannelInitializerEnum.GOOGLE_PROTOCOL_BUFFER);
+			BaseServer instance = BaseServer.getInstance(ChannelInitializerEnum.GOOGLE_PROTOCOL_BUFFER);
 			instance.setMessageDictionary(new ProtoBufDictionary() {
 				@Override
 				public void registerAllMessage() {
-					register(1000, CarMessage.class, CarHandler.class);
+					// register(1000, CarMessage.class, CarHandler.class);
 				}
 			});
 			instance.startServer();

@@ -1,6 +1,6 @@
 package org.gigas.core.server.channelInitializer;
 
-import org.gigas.core.server.handler.ProtoBufBasedServerHandler;
+import org.gigas.core.server.handler.ProtoBufMessageHandler;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
@@ -17,6 +17,6 @@ public class ProtoBufChannelInitializer extends ChannelInitializer<Channel> {
 	@Override
 	protected void initChannel(Channel channel) throws Exception {
 		ChannelPipeline pipeline = channel.pipeline();
-		pipeline.addLast(new ProtoBufBasedServerHandler());
+		pipeline.addLast(new ProtoBufMessageHandler());
 	}
 }

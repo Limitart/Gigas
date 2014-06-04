@@ -6,6 +6,8 @@ import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
+import java.util.HashMap;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.gigas.core.server.BaseServer;
@@ -22,10 +24,10 @@ import com.google.protobuf.MessageLite;
  * 
  */
 @Sharable
-public class ProtoBufBasedServerHandler extends ChannelInboundHandlerAdapter {
+public class ProtoBufMessageHandler extends ChannelInboundHandlerAdapter {
 
-	private static Logger log = LogManager.getLogger(ProtoBufBasedServerHandler.class);
-	private ByteBuf tempBuf = ByteBufAllocator.DEFAULT.buffer();
+	private static Logger log = LogManager.getLogger(ProtoBufMessageHandler.class);
+	private HashMap<ChannelHandlerContext, ByteBuf> byteBufMap = new HashMap<>();
 
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
 		log.info("channelActive");
@@ -44,9 +46,26 @@ public class ProtoBufBasedServerHandler extends ChannelInboundHandlerAdapter {
 			return;
 		}
 		ByteBuf buffer = (ByteBuf) msg;
+		if (!byteBufMap.containsKey(ctx)) {
+			byteBufMap.put(ctx, ByteBufAllocator.DEFAULT.buffer());
+		}
+		ByteBuf tempBuf = byteBufMap.get(ctx);
 		tempBuf.writeBytes(buffer);
+		buffer.release();
 		try {
 			int readableBytes = tempBuf.readableBytes();// 可读的字节数
+			if (readableBytes < BaseServer.getInstance().getServerConfig().getSecurityBytes().length) {// 包头的长度不够
+				return;
+			}
+			byte[] sb = new byte[BaseServer.getInstance().getServerConfig().getSecurityBytes().length];
+			tempBuf.readBytes(sb);
+			for (int i = 0; i < sb.length; ++i) {
+				if (sb[i] != BaseServer.getInstance().getServerConfig().getSecurityBytes()[i]) {
+					log.error("security bytes error! disconneted!");
+					ctx.close();
+					return;
+				}
+			}
 			if (readableBytes < 4) {// 包头的长度不够
 				return;
 			}
@@ -68,21 +87,25 @@ public class ProtoBufBasedServerHandler extends ChannelInboundHandlerAdapter {
 				return;
 			}
 			ProtoBufCustomedDecoder protobufDecoder = new ProtoBufCustomedDecoder(messageBuilder.getDefaultInstanceForType());
-			MessageLite excuteDecode = protobufDecoder.excuteDecode(id, ctx, body);// 执行解码
+			final MessageLite excuteDecode = protobufDecoder.excuteDecode(id, ctx, body);// 执行解码
 			ProtoBufMessageAbstract protoBufMessageAbstract = new ProtoBufMessageAbstract() {
 				@Override
 				public long getId() {
 					return id;
 				}
+
+				@Override
+				public Class<? extends MessageLite> getClazz() {
+					return excuteDecode.getClass();
+				}
 			};
 			protoBufMessageAbstract.setChannel(ctx.channel());
 			protoBufMessageAbstract.setMessage(excuteDecode);
 			// 得到的消息派发
-			BaseServer.getInstance().addTask(protoBufMessageAbstract);
+			BaseServer.getInstance().addHandleTask(protoBufMessageAbstract);
 			tempBuf.discardReadBytes();// 丢弃已读取字节
 		} catch (Exception e) {
 			log.error(e, e);
-
 		}
 
 	}
@@ -91,7 +114,7 @@ public class ProtoBufBasedServerHandler extends ChannelInboundHandlerAdapter {
 	 * 消息读取完毕
 	 */
 	public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
-		log.info("channelReadComplete");
+		// log.info("channelReadComplete");
 	}
 
 	/**
@@ -106,6 +129,7 @@ public class ProtoBufBasedServerHandler extends ChannelInboundHandlerAdapter {
 	 */
 	public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
 		log.info(ctx.channel().remoteAddress() + "disconnected!");
+		byteBufMap.remove(ctx);
 	}
 
 	public void channelWritabilityChanged(ChannelHandlerContext ctx) throws Exception {
