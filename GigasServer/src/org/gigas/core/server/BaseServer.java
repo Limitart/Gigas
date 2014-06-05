@@ -22,7 +22,7 @@ import org.gigas.core.server.config.ServerConfig;
 import org.gigas.core.server.exception.MessageException;
 import org.gigas.core.server.exception.ServerException;
 import org.gigas.core.server.message.dictionary.ProtoBufDictionary;
-import org.gigas.core.server.thread.IHandleThread;
+import org.gigas.core.server.thread.IThread;
 import org.gigas.core.server.thread.ProtoBufBasedMessageHandleThread;
 import org.gigas.core.server.thread.ProtoBufBasedMessageSenderThread;
 import org.gigas.core.server.thread.StringBasedMessageHandleThread;
@@ -56,9 +56,9 @@ public class BaseServer implements IServer {
 	// 服务器解析协议类型
 	private ChannelInitializerEnum protocolEnum;
 	// 消息处理线程
-	private IHandleThread handleThread;
+	private IThread handleThread;
 	// 消息发送线程
-	private IHandleThread senderThread;
+	private IThread senderThread;
 
 	/**
 	 * 得到服务器实例

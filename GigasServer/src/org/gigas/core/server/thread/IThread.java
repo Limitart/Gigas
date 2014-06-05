@@ -1,6 +1,6 @@
 package org.gigas.core.server.thread;
 
-public interface IHandleThread {
+public interface IThread {
 	/**
 	 * 增加任务
 	 * 

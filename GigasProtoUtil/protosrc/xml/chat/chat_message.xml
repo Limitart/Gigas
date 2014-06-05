@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<protos package="org.gigas.chat" id="100" module="Chat">
+	<message id="1" name="ChatInfo" type="req" annotation="聊天消息">
+		<field type="String" name="content" annotation="聊天内容"/>
+		<field type="long" name="number" annotation="发送者编号"/>
+	</message>
+	<message id="2" name="RoleChatInfo" type="res" annotation="玩家简要信息">
+		<field type="long" name="roleId" annotation="角色ID"/>
+		<field type="String" name="name" annotation="角色名"/>
+		<field type="int" name="level" annotation="等级"/>
+		<field type="boolean" name="sex" annotation="性别"/>
+	</message>
+</protos>

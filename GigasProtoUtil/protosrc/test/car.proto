@@ -1,8 +1,0 @@
-option java_package = "org.gigas.test.message";
-option java_outer_classname = "CarMessageFactory";
-option optimize_for = LITE_RUNTIME;
-message CarMessage{
-	required string name=1;
-	required int32 age=2;
-	required int32 price=3;
-}

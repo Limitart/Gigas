@@ -77,7 +77,7 @@ public class ProtoBufBatGenerator {
 				} else if ("protosrc".equalsIgnoreCase(name)) {
 					this.protosrc = value;
 				} else if ("output".equalsIgnoreCase(name)) {
-					this.outputPath = value;
+					this.outputPath = value + File.separator + "src";
 				} else if ("batpath".equalsIgnoreCase(name)) {
 					this.batfilePath = value;
 				}
@@ -185,7 +185,6 @@ public class ProtoBufBatGenerator {
 			}
 			System.out.println();
 			buffer.append("\r\n");// windows下
-			// buffer.append("\n");// linux下
 		}
 	}
 
@@ -197,7 +196,7 @@ public class ProtoBufBatGenerator {
 		StringBuffer buffer = new StringBuffer();
 		fileIteration(new File(protosrc), buffer);
 		buffer.append("\r\n").append("pause");
-		File file = new File(batfilePath + "\\run_generator.bat");
+		File file = new File(batfilePath + File.separator + "run_generator.bat");
 		try {
 			file.createNewFile();
 		} catch (IOException e) {
@@ -220,11 +219,27 @@ public class ProtoBufBatGenerator {
 		System.out.println("Ending Generating Message..........");
 	}
 
-	public void excute() {
-		compile();
+	public String getXmlpath() {
+		return xmlpath;
 	}
 
-	public static void main(String[] args) {
-		ProtoBufBatGenerator.getInstance().excute();
+	public String getProtosrc() {
+		return protosrc;
+	}
+
+	public String getOutputPath() {
+		return outputPath;
+	}
+
+	public String getCompilerPath() {
+		return compilerPath;
+	}
+
+	public String getBatfilePath() {
+		return batfilePath;
+	}
+
+	public void excute() {
+		compile();
 	}
 }

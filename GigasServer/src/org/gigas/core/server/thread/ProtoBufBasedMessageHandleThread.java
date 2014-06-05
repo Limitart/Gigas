@@ -8,7 +8,7 @@ import org.gigas.core.server.BaseServer;
 import org.gigas.core.server.exception.MessageException;
 import org.gigas.core.server.exception.ServerException;
 import org.gigas.core.server.handler.IHandler;
-import org.gigas.core.server.message.ProtoBufMessageAbstract;
+import org.gigas.core.server.message.ProtoBufPackage;
 import org.gigas.core.server.message.dictionary.ProtoBufDictionary;
 
 /**
@@ -17,9 +17,9 @@ import org.gigas.core.server.message.dictionary.ProtoBufDictionary;
  * @author hank
  * 
  */
-public class ProtoBufBasedMessageHandleThread extends Thread implements IHandleThread {
+public class ProtoBufBasedMessageHandleThread extends Thread implements IThread {
 	private static Logger log = LogManager.getLogger(ProtoBufBasedMessageHandleThread.class);
-	private LinkedBlockingQueue<ProtoBufMessageAbstract> handleQueue = new LinkedBlockingQueue<>();
+	private LinkedBlockingQueue<ProtoBufPackage> handleQueue = new LinkedBlockingQueue<>();
 	private boolean stop = true;
 
 	public ProtoBufBasedMessageHandleThread(String name) {
@@ -30,7 +30,7 @@ public class ProtoBufBasedMessageHandleThread extends Thread implements IHandleT
 	public void run() {
 		stop = false;
 		while (!stop || !handleQueue.isEmpty()) {
-			ProtoBufMessageAbstract poll = handleQueue.poll();
+			ProtoBufPackage poll = handleQueue.poll();
 			if (poll == null) {
 				synchronized (this) {
 					try {
@@ -44,6 +44,8 @@ public class ProtoBufBasedMessageHandleThread extends Thread implements IHandleT
 					ProtoBufDictionary messageDictionary = BaseServer.getInstance().getMessageDictionary();
 					if (messageDictionary != null) {
 						IHandler handler = messageDictionary.getHandler(poll.getId());
+						handler.setChannel(poll.getChannel());
+						handler.setMessageId(poll.getId());
 						handler.handleMessage(poll.getMessage());
 					}
 				} catch (ServerException e) {
@@ -72,10 +74,10 @@ public class ProtoBufBasedMessageHandleThread extends Thread implements IHandleT
 
 	@Override
 	public void addTask(Object t) {
-		if (!(t instanceof ProtoBufMessageAbstract)) {
+		if (!(t instanceof ProtoBufPackage)) {
 			return;
 		}
-		ProtoBufMessageAbstract message = (ProtoBufMessageAbstract) t;
+		ProtoBufPackage message = (ProtoBufPackage) t;
 		handleQueue.add(message);
 		synchronized (this) {
 			notify();

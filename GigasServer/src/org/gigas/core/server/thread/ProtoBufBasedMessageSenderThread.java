@@ -7,7 +7,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.gigas.core.server.message.ProtoBufMessageAbstract;
+import org.gigas.core.server.message.ProtoBufPackage;
 import org.gigas.core.utils.MessageUtil;
 
 /**
@@ -16,9 +16,9 @@ import org.gigas.core.utils.MessageUtil;
  * @author hank
  * 
  */
-public class ProtoBufBasedMessageSenderThread extends Thread implements IHandleThread {
+public class ProtoBufBasedMessageSenderThread extends Thread implements IThread {
 	private static Logger log = LogManager.getLogger(ProtoBufBasedMessageSenderThread.class);
-	private LinkedBlockingQueue<ProtoBufMessageAbstract> senderQueue = new LinkedBlockingQueue<>();
+	private LinkedBlockingQueue<ProtoBufPackage> senderQueue = new LinkedBlockingQueue<>();
 	private boolean stop = true;
 
 	public ProtoBufBasedMessageSenderThread(String name) {
@@ -29,7 +29,7 @@ public class ProtoBufBasedMessageSenderThread extends Thread implements IHandleT
 	public void run() {
 		stop = false;
 		while (!stop || !senderQueue.isEmpty()) {
-			ProtoBufMessageAbstract poll = senderQueue.poll();
+			ProtoBufPackage poll = senderQueue.poll();
 			if (poll == null) {
 				synchronized (this) {
 					try {
@@ -65,10 +65,10 @@ public class ProtoBufBasedMessageSenderThread extends Thread implements IHandleT
 
 	@Override
 	public void addTask(Object t) {
-		if (!(t instanceof ProtoBufMessageAbstract)) {
+		if (!(t instanceof ProtoBufPackage)) {
 			return;
 		}
-		ProtoBufMessageAbstract message = (ProtoBufMessageAbstract) t;
+		ProtoBufPackage message = (ProtoBufPackage) t;
 		senderQueue.add(message);
 		synchronized (this) {
 			notify();

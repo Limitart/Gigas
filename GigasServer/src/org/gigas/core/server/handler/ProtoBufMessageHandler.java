@@ -12,9 +12,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.gigas.core.server.BaseServer;
 import org.gigas.core.server.codec.ProtoBufCustomedDecoder;
-import org.gigas.core.server.message.ProtoBufMessageAbstract;
+import org.gigas.core.server.message.ProtoBufPackage;
 
-import com.google.protobuf.AbstractMessageLite.Builder;
 import com.google.protobuf.MessageLite;
 
 /**
@@ -79,16 +78,17 @@ public class ProtoBufMessageHandler extends ChannelInboundHandlerAdapter {
 			final long id = tempBuf.readLong();
 			ByteBuf body = ByteBufAllocator.DEFAULT.buffer(length - 8);
 			tempBuf.readBytes(body);
-			@SuppressWarnings("rawtypes")
-			Builder messageBuilder = BaseServer.getInstance().getMessageDictionary().getMessage(id);
-			if (messageBuilder == null) {// 没有找到对应的消息类
+			final MessageLite message = BaseServer.getInstance().getMessageDictionary().getMessage(id).build();
+			if (message == null) {// 没有找到对应的消息类
 				log.error("id:" + id + " not exist!");
 				tempBuf.discardReadBytes();// 丢弃已读取字节
 				return;
 			}
-			ProtoBufCustomedDecoder protobufDecoder = new ProtoBufCustomedDecoder(messageBuilder.getDefaultInstanceForType());
+			ProtoBufCustomedDecoder protobufDecoder = new ProtoBufCustomedDecoder(message.getDefaultInstanceForType());
 			final MessageLite excuteDecode = protobufDecoder.excuteDecode(id, ctx, body);// 执行解码
-			ProtoBufMessageAbstract protoBufMessageAbstract = new ProtoBufMessageAbstract() {
+			// 得到的消息派发
+			ProtoBufPackage protoBufPackage = new ProtoBufPackage() {
+
 				@Override
 				public long getId() {
 					return id;
@@ -96,13 +96,12 @@ public class ProtoBufMessageHandler extends ChannelInboundHandlerAdapter {
 
 				@Override
 				public Class<? extends MessageLite> getClazz() {
-					return excuteDecode.getClass();
+					return message.getClass();
 				}
 			};
-			protoBufMessageAbstract.setChannel(ctx.channel());
-			protoBufMessageAbstract.setMessage(excuteDecode);
-			// 得到的消息派发
-			BaseServer.getInstance().addHandleTask(protoBufMessageAbstract);
+			protoBufPackage.setMessage(excuteDecode);
+			protoBufPackage.setChannel(ctx.channel());
+			BaseServer.getInstance().addHandleTask(protoBufPackage);
 			tempBuf.discardReadBytes();// 丢弃已读取字节
 		} catch (Exception e) {
 			log.error(e, e);

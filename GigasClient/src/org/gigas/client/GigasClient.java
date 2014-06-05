@@ -10,7 +10,11 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 
 import java.io.UnsupportedEncodingException;
 
-import org.gigas.test.message.CarMessageFactory.CarMessage;
+import org.gigas.chat.message.ChatInfoMessageBuilder;
+import org.gigas.chat.message.proto.ChatMessageFactory.ChatInfo;
+
+import com.google.protobuf.GeneratedMessageLite;
+import com.google.protobuf.MessageLite;
 
 public class GigasClient {
 	public static void main(String[] args) {
@@ -50,18 +54,18 @@ public class GigasClient {
 			ChannelFuture sync = boot.connect("localhost", 8888).sync();
 			Channel channel = sync.channel();
 			while (channel.isActive()) {
-				org.gigas.test.message.CarMessageFactory.CarMessage.Builder newBuilder = CarMessage.newBuilder();
-				newBuilder.setName("car");
-				newBuilder.setPrice(101010);
-				newBuilder.setAge(12);
-				CarMessage build = newBuilder.build();
+				ChatInfoMessageBuilder msg = new ChatInfoMessageBuilder();
+				msg.setContent("hehe");
+				msg.setNumber(111111l);
+				
+				ChatInfo build = msg.build();
 				byte[] byteArray = build.toByteArray();
 				ByteBuf buf = ByteBufAllocator.DEFAULT.buffer();
 				buf.writeBytes(byteArray);
 				ByteBuf result = ByteBufAllocator.DEFAULT.buffer();
 				result.writeBytes(secirityBytes);
 				result.writeInt(8 + buf.readableBytes());
-				result.writeLong(1000);
+				result.writeLong(1001);
 				result.writeBytes(buf);
 				channel.writeAndFlush(result);
 				buf.resetReaderIndex();

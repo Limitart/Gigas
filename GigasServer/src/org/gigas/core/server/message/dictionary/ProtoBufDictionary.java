@@ -8,7 +8,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.gigas.core.server.exception.MessageException;
 import org.gigas.core.server.handler.IHandler;
-import org.gigas.core.server.message.ProtoBufMessageAbstract;
+import org.gigas.core.server.message.ProtoBufPackage;
 
 import com.google.protobuf.AbstractMessageLite.Builder;
 import com.google.protobuf.MessageLite;
@@ -21,7 +21,7 @@ import com.google.protobuf.MessageLite;
  */
 public abstract class ProtoBufDictionary {
 	private static Logger log = LogManager.getLogger(ProtoBufDictionary.class);
-	private HashMap<Long, ProtoBufMessageAbstract> id_messageMap = new HashMap<>();
+	private HashMap<Long, ProtoBufPackage> id_messageMap = new HashMap<>();
 	private HashMap<Long, Class<? extends IHandler>> id_handlerMap = new HashMap<>();
 
 	/**
@@ -38,7 +38,7 @@ public abstract class ProtoBufDictionary {
 		if (!id_messageMap.containsKey(id)) {
 			throw new MessageException("id:" + id + " message not exist!");
 		}
-		ProtoBufMessageAbstract protoBufMessageAbstract = id_messageMap.get(id);
+		ProtoBufPackage protoBufMessageAbstract = id_messageMap.get(id);
 		Class<? extends MessageLite> clazz = protoBufMessageAbstract.getClazz();
 		Builder result = null;
 		try {
@@ -100,7 +100,7 @@ public abstract class ProtoBufDictionary {
 		if (id_messageMap.containsKey(id)) {
 			throw new MessageException("id:" + id + " duplicate message");
 		}
-		ProtoBufMessageAbstract protoBufMessageAbstract = new ProtoBufMessageAbstract() {
+		ProtoBufPackage protoBufMessageAbstract = new ProtoBufPackage() {
 			@Override
 			public long getId() {
 				return id;

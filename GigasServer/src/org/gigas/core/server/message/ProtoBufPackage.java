@@ -10,7 +10,7 @@ import com.google.protobuf.MessageLite;
  * @author hank
  * 
  */
-public abstract class ProtoBufMessageAbstract implements IMessage {
+public abstract class ProtoBufPackage implements IMessage {
 	protected MessageLite protobuf;
 	protected Channel channel;
 	protected Class<? extends MessageLite> Clazz;

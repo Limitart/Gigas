@@ -8,7 +8,7 @@ import org.apache.logging.log4j.Logger;
 import org.gigas.core.server.BaseServer;
 import org.gigas.core.server.config.ServerConfig;
 import org.gigas.core.server.exception.ServerException;
-import org.gigas.core.server.message.ProtoBufMessageAbstract;
+import org.gigas.core.server.message.ProtoBufPackage;
 
 /**
  * 消息工具类
@@ -26,7 +26,7 @@ public class MessageUtil {
 	 * @param message
 	 * @return
 	 */
-	public static ByteBuf buildByteBuf(ProtoBufMessageAbstract message) {
+	public static ByteBuf buildByteBuf(ProtoBufPackage message) {
 		if (message != null) {
 			ByteBuf buffer = ByteBufAllocator.DEFAULT.buffer();
 			try {

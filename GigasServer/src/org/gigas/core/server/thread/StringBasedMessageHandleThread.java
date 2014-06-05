@@ -14,7 +14,7 @@ import org.gigas.core.server.BaseServer;
  * @author hank
  * 
  */
-public class StringBasedMessageHandleThread extends Thread implements IHandleThread {
+public class StringBasedMessageHandleThread extends Thread implements IThread {
 	private static Logger log = LogManager.getLogger(StringBasedMessageHandleThread.class);
 	private LinkedBlockingQueue<String> handleQueue = new LinkedBlockingQueue<>();
 	private boolean stop = true;
