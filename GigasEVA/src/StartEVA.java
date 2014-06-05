@@ -1,5 +1,5 @@
-import org.gigas.core.server.exception.MessageException;
-import org.gigas.core.server.exception.ServerException;
+import org.gigas.core.exception.MessageException;
+import org.gigas.core.exception.ServerException;
 import org.gigas.server.EVAServer;
 
 public class StartEVA {

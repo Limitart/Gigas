@@ -3,7 +3,7 @@ package org.gigas.core.server.codec;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.gigas.core.server.exception.MessageException;
+import org.gigas.core.exception.MessageException;
 
 import com.google.protobuf.MessageLite;
 

@@ -1,6 +1,6 @@
 package org.gigas.core.server;
 
-import org.gigas.core.server.exception.MessageException;
+import org.gigas.core.exception.MessageException;
 
 /**
  * 服务器接口

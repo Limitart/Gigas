@@ -1,4 +1,4 @@
-package org.gigas.core.utils;
+package org.gigas.utils;
 
 /**
  * 符号

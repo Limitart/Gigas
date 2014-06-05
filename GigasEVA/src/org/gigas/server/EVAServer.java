@@ -1,9 +1,9 @@
 package org.gigas.server;
 
+import org.gigas.core.exception.MessageException;
+import org.gigas.core.exception.ServerException;
 import org.gigas.core.server.BaseServer;
 import org.gigas.core.server.channelInitializer.enumeration.ChannelInitializerEnum;
-import org.gigas.core.server.exception.MessageException;
-import org.gigas.core.server.exception.ServerException;
 import org.gigas.message.dictionary.MessageDictionary;
 
 /**

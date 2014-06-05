@@ -6,7 +6,7 @@ import java.util.HashMap;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.gigas.core.server.exception.MessageException;
+import org.gigas.core.exception.MessageException;
 import org.gigas.core.server.handler.IHandler;
 import org.gigas.core.server.message.ProtoBufPackage;
 

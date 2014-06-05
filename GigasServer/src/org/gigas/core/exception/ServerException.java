@@ -1,4 +1,4 @@
-package org.gigas.core.server.exception;
+package org.gigas.core.exception;
 
 /**
  * 服务器异常

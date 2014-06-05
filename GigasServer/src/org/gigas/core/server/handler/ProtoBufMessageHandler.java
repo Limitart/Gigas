@@ -81,7 +81,7 @@ public class ProtoBufMessageHandler extends ChannelInboundHandlerAdapter {
 			final MessageLite message = BaseServer.getInstance().getMessageDictionary().getMessage(id).build();
 			if (message == null) {// 没有找到对应的消息类
 				log.error("id:" + id + " not exist!");
-				tempBuf.discardReadBytes();// 丢弃已读取字节
+				ctx.close();
 				return;
 			}
 			ProtoBufCustomedDecoder protobufDecoder = new ProtoBufCustomedDecoder(message.getDefaultInstanceForType());

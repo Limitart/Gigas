@@ -1,13 +1,13 @@
-package org.gigas.core.utils;
+package org.gigas.utils;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.gigas.core.exception.ServerException;
 import org.gigas.core.server.BaseServer;
 import org.gigas.core.server.config.ServerConfig;
-import org.gigas.core.server.exception.ServerException;
 import org.gigas.core.server.message.ProtoBufPackage;
 
 /**
