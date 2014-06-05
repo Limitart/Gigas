@@ -9,12 +9,13 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.gigas.chat.message.ChatInfoMessageBuilder;
+import org.gigas.chat.message.RoleChatInfoMessageBuilder;
 import org.gigas.chat.message.proto.ChatMessageFactory.ChatInfo;
-
-import com.google.protobuf.GeneratedMessageLite;
-import com.google.protobuf.MessageLite;
+import org.gigas.chat.message.proto.ChatMessageFactory.RoleChatInfo;
 
 public class GigasClient {
 	public static void main(String[] args) {
@@ -55,9 +56,21 @@ public class GigasClient {
 			Channel channel = sync.channel();
 			while (channel.isActive()) {
 				ChatInfoMessageBuilder msg = new ChatInfoMessageBuilder();
+				RoleChatInfoMessageBuilder roleChatInfoMessageBuilder = new RoleChatInfoMessageBuilder();
+				roleChatInfoMessageBuilder.setLevel(1);
+				roleChatInfoMessageBuilder.setName("hank");
+				roleChatInfoMessageBuilder.setRoleId(1231312321321312l);
+				roleChatInfoMessageBuilder.setSex(true);
+				RoleChatInfo build2 = roleChatInfoMessageBuilder.build();
 				msg.setContent("hehe");
 				msg.setNumber(111111l);
-				
+				List<Integer> list = new ArrayList<Integer>();
+				list.add(123);
+				list.add(234);
+				list.add(43436);
+				list.add(135);
+				msg.setIntegerList(list);
+				msg.setRoleChatInfo(build2);
 				ChatInfo build = msg.build();
 				byte[] byteArray = build.toByteArray();
 				ByteBuf buf = ByteBufAllocator.DEFAULT.buffer();

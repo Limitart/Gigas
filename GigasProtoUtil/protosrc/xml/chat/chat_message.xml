@@ -3,6 +3,8 @@
 	<message id="1" name="ChatInfo" type="req" annotation="聊天消息">
 		<field type="String" name="content" annotation="聊天内容"/>
 		<field type="long" name="number" annotation="发送者编号"/>
+		<list type="int" name="integerList" annotation="整型数组"/>
+		<field type="RoleChatInfo" name="roleChatInfo" annotation="roleChatInfo"/>
 	</message>
 	<message id="2" name="RoleChatInfo" type="res" annotation="玩家简要信息">
 		<field type="long" name="roleId" annotation="角色ID"/>

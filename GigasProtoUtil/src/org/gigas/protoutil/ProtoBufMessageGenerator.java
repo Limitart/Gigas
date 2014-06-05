@@ -19,7 +19,7 @@ public class ProtoBufMessageGenerator {
 			// 1.编译xml配置文件，转化为.proto文件
 			// 2.根据xml配置文件生成对应的java文件来封装原始protojava文件
 			// 3.根据xml配置文件来生成消息的handler
-			ProtoXmlParser.xmlParse("G://GitWork//Gigas//GigasProtoUtil//protosrc//xml//chat//chat_message.xml");
+			ProtoXmlParser.xmlParse("G://GitWork//Gigas//GigasProtoUtil//protosrc//xml//chat//chat_message.xml", false);
 		} catch (JDOMException e) {
 			e.printStackTrace();
 		} catch (IOException e) {

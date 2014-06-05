@@ -6,7 +6,7 @@ import org.gigas.chat.message.proto.ChatMessageFactory;
 import org.gigas.chat.message.proto.ChatMessageFactory.RoleChatInfo.Builder;
 import org.gigas.core.server.message.ProtoBufPackage;
 
-import com.google.protobuf.GeneratedMessageLite;
+import com.google.protobuf.MessageLite;
 
 
 public class RoleChatInfoMessageBuilder extends ProtoBufPackage {
@@ -87,7 +87,7 @@ public class RoleChatInfoMessageBuilder extends ProtoBufPackage {
 	}
 
 	@Override
-	public Class<? extends GeneratedMessageLite> getClazz() {
+	public Class<? extends MessageLite> getClazz() {
 		return ChatMessageFactory.RoleChatInfo.class;
 	}
 	

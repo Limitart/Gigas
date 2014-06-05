@@ -23,7 +23,7 @@ public class ProtoXmlParser {
 	private final static String messageTypeName = "option java_outer_classname = \"{@}\";\r\n";
 	private final static String optimize_for = "option optimize_for = LITE_RUNTIME;\r\n";
 	private final static String messageHead = "message {@} {\r\n";
-	private final static String messageBody = "\toptional {@} {#}={$};";
+	private final static String messageBody = "\t{*} {@} {#}={$};";
 	private final static String javasrcHead = "package {@}.message;\r\n";
 	private final static String classname = "public class {@}MessageBuilder extends ProtoBufPackage {\r\n\r\n";
 	private final static String field = "\tprivate {@} {#};// {$}\r\n\r\n";
@@ -37,7 +37,7 @@ public class ProtoXmlParser {
 	private final static String javaHandlerImport = "import {@}.message.proto.{#}MessageFactory.{$};\r\nimport org.gigas.core.server.handler.IHandler;\r\n\r\nimport com.google.protobuf.MessageLite;\r\n\r\n";
 	private final static String javaHandlerClass = "public class {@}Handler extends IHandler {\r\n";
 
-	public static void xmlParse(String path) throws JDOMException, IOException {
+	public static void xmlParse(String path, boolean OverwriteHandler) throws JDOMException, IOException {
 		File xmlfile = new File(path);
 		if (!xmlfile.exists()) {
 			System.err.println("文件" + path + "不存在");
@@ -85,7 +85,7 @@ public class ProtoXmlParser {
 			javasrcMessageStringBuffer.append("import " + packagename + ".message.proto." + module + "MessageFactory;\r\n");
 			javasrcMessageStringBuffer.append("import " + packagename + ".message.proto." + module + "MessageFactory." + name + ".Builder;" + "\r\n");
 			javasrcMessageStringBuffer.append("import org.gigas.core.server.message.ProtoBufPackage;\r\n\r\n");
-			javasrcMessageStringBuffer.append("import com.google.protobuf.GeneratedMessageLite;\r\n\r\n\r\n");
+			javasrcMessageStringBuffer.append("import com.google.protobuf.MessageLite;\r\n\r\n\r\n");
 			javasrcMessageStringBuffer.append(classname.replace("{@}", name));
 			// handler
 			StringBuffer javasrcHandlerStringBuffer = new StringBuffer();
@@ -104,27 +104,37 @@ public class ProtoXmlParser {
 			List<Element> children = temp.getChildren();
 			int count = 1;
 			StringBuffer javaMethodStringBuffer = new StringBuffer();
+			boolean isList;
 			for (Element child : children) {
+				isList = false;
 				String fieldtype = child.getAttribute("type").getValue();
 				String fieldname = child.getAttribute("name").getValue();
 				String fieldannotation = child.getAttribute("annotation").getValue();
-				protosrcStringBuffer.append(messageBody.replace("{@}", fieldtype(fieldtype)).replace("{#}", fieldname).replace("{$}", (count++) + "")).append("//").append(fieldannotation).append("\r\n");
-				javasrcMessageStringBuffer.append(field.replace("{@}", fieldtype).replace("{#}", fieldname).replace("{$}", fieldannotation));
+
+				String optionOrRepeat = "optional";
+				if ("list".equalsIgnoreCase(child.getName())) {
+					optionOrRepeat = "repeated";
+					isList = true;
+				}
+				String typeStr = (isList ? "List<" + baseToClass(fieldtype) + ">" : fieldtype);
+				protosrcStringBuffer.append(messageBody.replace("{@}", fieldtype(fieldtype)).replace("{#}", fieldname).replace("{$}", (count++) + "").replace("{*}", optionOrRepeat)).append("//").append(fieldannotation).append("\r\n");
+				javasrcMessageStringBuffer.append(field.replace("{@}", typeStr).replace("{#}", fieldname).replace("{$}", fieldannotation));
 				// setter
 				javaMethodStringBuffer.append("\t/**\r\n");
 				javaMethodStringBuffer.append("\t *" + fieldannotation + "setter\r\n");
 				javaMethodStringBuffer.append("\t */\r\n");
-				javaMethodStringBuffer.append(setMethod.replace("{@}", (fieldname.substring(0, 1).toUpperCase()) + fieldname.substring(1)).replace("{#}", fieldtype).replace("{$}", fieldname));
+				javaMethodStringBuffer.append(setMethod.replace("{@}", (fieldname.substring(0, 1).toUpperCase()) + fieldname.substring(1)).replace("{#}", typeStr).replace("{$}", fieldname));
 				javaMethodStringBuffer.append(setMethodBody.replace("{@}", fieldname).replace("{#}", fieldname));
 				// getter
 				javaMethodStringBuffer.append("\r\n");
 				javaMethodStringBuffer.append("\t/**\r\n");
 				javaMethodStringBuffer.append("\t *" + fieldannotation + "getter\r\n");
 				javaMethodStringBuffer.append("\t */\r\n");
-				javaMethodStringBuffer.append(getMethod.replace("{@}", fieldtype).replace("{#}", (fieldname.substring(0, 1).toUpperCase()) + fieldname.substring(1)));
+				javaMethodStringBuffer.append(getMethod.replace("{@}", typeStr).replace("{#}", (fieldname.substring(0, 1).toUpperCase()) + fieldname.substring(1)));
 				javaMethodStringBuffer.append(getMethodBody.replace("{@}", fieldname));
 				// build
-				buildMethodBodyBuffer.append("\t\tbuilder.set" + (fieldname.substring(0, 1).toUpperCase() + fieldname.substring(1)) + "(this." + fieldname + ");\r\n");
+				String setStr = isList ? "addAll" : "set";
+				buildMethodBodyBuffer.append("\t\tbuilder." + setStr + (fieldname.substring(0, 1).toUpperCase() + fieldname.substring(1)) + "(this." + fieldname + ");\r\n");
 			}
 			protosrcStringBuffer.append("}\r\n\r\n");
 			javaMethodStringBuffer.append("\r\n");
@@ -138,7 +148,7 @@ public class ProtoXmlParser {
 			javaMethodStringBuffer.append("\t\treturn " + id + ";\r\n");
 			javaMethodStringBuffer.append("\t}\r\n\r\n");
 			javaMethodStringBuffer.append("\t@Override\r\n");
-			javaMethodStringBuffer.append("\tpublic Class<? extends GeneratedMessageLite> getClazz() {\r\n");
+			javaMethodStringBuffer.append("\tpublic Class<? extends MessageLite> getClazz() {\r\n");
 			javaMethodStringBuffer.append("\t\t" + "return {@}MessageFactory.{#}.class;\r\n\t}\r\n".replace("{@}", module).replace("{#}", name));
 			javaMethodStringBuffer.append("\t\r\n\r\n");
 			javasrcMessageStringBuffer.append(javaMethodStringBuffer);
@@ -180,9 +190,19 @@ public class ProtoXmlParser {
 				handler = handler + File.separator + javahanlderfile;
 				System.out.println(handler);
 				File jhfile = new File(handler);
-				FileOutputStream jhoutput = new FileOutputStream(jhfile);
-				jhoutput.write(javasrcHandlerStringBuffer.toString().getBytes("UTF-8"));
-				jhoutput.close();
+				boolean canOverwrite = false;
+				if (OverwriteHandler) {
+					canOverwrite = true;
+				} else if (!OverwriteHandler && jhfile.exists()) {
+					canOverwrite = false;
+				} else if (!OverwriteHandler && !jhfile.exists()) {
+					canOverwrite = true;
+				}
+				if (canOverwrite) {
+					FileOutputStream jhoutput = new FileOutputStream(jhfile);
+					jhoutput.write(javasrcHandlerStringBuffer.toString().getBytes("UTF-8"));
+					jhoutput.close();
+				}
 			}
 		}
 		System.out.println(protosrcStringBuffer.toString());
@@ -209,5 +229,23 @@ public class ProtoXmlParser {
 			return "double";
 		}
 		return s;
+	}
+
+	private static String baseToClass(String s) {
+		if ("string".equalsIgnoreCase(s)) {
+			return "String";
+		} else if ("int".equalsIgnoreCase(s)) {
+			return "Integer";
+		} else if ("float".equalsIgnoreCase(s)) {
+			return "Float";
+		} else if ("boolean".equalsIgnoreCase(s)) {
+			return "Boolean";
+		} else if ("long".equalsIgnoreCase(s)) {
+			return "Long";
+		} else if ("double".equalsIgnoreCase(s)) {
+			return "Double";
+		}
+		return s;
+
 	}
 }

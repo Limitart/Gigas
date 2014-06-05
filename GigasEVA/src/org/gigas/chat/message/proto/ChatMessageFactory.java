@@ -55,6 +55,50 @@ public final class ChatMessageFactory {
      * </pre>
      */
     long getNumber();
+
+    // repeated int32 integerList = 3;
+    /**
+     * <code>repeated int32 integerList = 3;</code>
+     *
+     * <pre>
+     *整型数组
+     * </pre>
+     */
+    java.util.List<java.lang.Integer> getIntegerListList();
+    /**
+     * <code>repeated int32 integerList = 3;</code>
+     *
+     * <pre>
+     *整型数组
+     * </pre>
+     */
+    int getIntegerListCount();
+    /**
+     * <code>repeated int32 integerList = 3;</code>
+     *
+     * <pre>
+     *整型数组
+     * </pre>
+     */
+    int getIntegerList(int index);
+
+    // optional .RoleChatInfo roleChatInfo = 4;
+    /**
+     * <code>optional .RoleChatInfo roleChatInfo = 4;</code>
+     *
+     * <pre>
+     *roleChatInfo
+     * </pre>
+     */
+    boolean hasRoleChatInfo();
+    /**
+     * <code>optional .RoleChatInfo roleChatInfo = 4;</code>
+     *
+     * <pre>
+     *roleChatInfo
+     * </pre>
+     */
+    org.gigas.chat.message.proto.ChatMessageFactory.RoleChatInfo getRoleChatInfo();
   }
   /**
    * Protobuf type {@code ChatInfo}
@@ -113,6 +157,40 @@ public final class ChatMessageFactory {
               number_ = input.readInt64();
               break;
             }
+            case 24: {
+              if (!((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
+                integerList_ = new java.util.ArrayList<java.lang.Integer>();
+                mutable_bitField0_ |= 0x00000004;
+              }
+              integerList_.add(input.readInt32());
+              break;
+            }
+            case 26: {
+              int length = input.readRawVarint32();
+              int limit = input.pushLimit(length);
+              if (!((mutable_bitField0_ & 0x00000004) == 0x00000004) && input.getBytesUntilLimit() > 0) {
+                integerList_ = new java.util.ArrayList<java.lang.Integer>();
+                mutable_bitField0_ |= 0x00000004;
+              }
+              while (input.getBytesUntilLimit() > 0) {
+                integerList_.add(input.readInt32());
+              }
+              input.popLimit(limit);
+              break;
+            }
+            case 34: {
+              org.gigas.chat.message.proto.ChatMessageFactory.RoleChatInfo.Builder subBuilder = null;
+              if (((bitField0_ & 0x00000004) == 0x00000004)) {
+                subBuilder = roleChatInfo_.toBuilder();
+              }
+              roleChatInfo_ = input.readMessage(org.gigas.chat.message.proto.ChatMessageFactory.RoleChatInfo.PARSER, extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(roleChatInfo_);
+                roleChatInfo_ = subBuilder.buildPartial();
+              }
+              bitField0_ |= 0x00000004;
+              break;
+            }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
@@ -121,6 +199,9 @@ public final class ChatMessageFactory {
         throw new com.google.protobuf.InvalidProtocolBufferException(
             e.getMessage()).setUnfinishedMessage(this);
       } finally {
+        if (((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
+          integerList_ = java.util.Collections.unmodifiableList(integerList_);
+        }
         makeExtensionsImmutable();
       }
     }
@@ -219,9 +300,70 @@ public final class ChatMessageFactory {
       return number_;
     }
 
+    // repeated int32 integerList = 3;
+    public static final int INTEGERLIST_FIELD_NUMBER = 3;
+    private java.util.List<java.lang.Integer> integerList_;
+    /**
+     * <code>repeated int32 integerList = 3;</code>
+     *
+     * <pre>
+     *整型数组
+     * </pre>
+     */
+    public java.util.List<java.lang.Integer>
+        getIntegerListList() {
+      return integerList_;
+    }
+    /**
+     * <code>repeated int32 integerList = 3;</code>
+     *
+     * <pre>
+     *整型数组
+     * </pre>
+     */
+    public int getIntegerListCount() {
+      return integerList_.size();
+    }
+    /**
+     * <code>repeated int32 integerList = 3;</code>
+     *
+     * <pre>
+     *整型数组
+     * </pre>
+     */
+    public int getIntegerList(int index) {
+      return integerList_.get(index);
+    }
+
+    // optional .RoleChatInfo roleChatInfo = 4;
+    public static final int ROLECHATINFO_FIELD_NUMBER = 4;
+    private org.gigas.chat.message.proto.ChatMessageFactory.RoleChatInfo roleChatInfo_;
+    /**
+     * <code>optional .RoleChatInfo roleChatInfo = 4;</code>
+     *
+     * <pre>
+     *roleChatInfo
+     * </pre>
+     */
+    public boolean hasRoleChatInfo() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    /**
+     * <code>optional .RoleChatInfo roleChatInfo = 4;</code>
+     *
+     * <pre>
+     *roleChatInfo
+     * </pre>
+     */
+    public org.gigas.chat.message.proto.ChatMessageFactory.RoleChatInfo getRoleChatInfo() {
+      return roleChatInfo_;
+    }
+
     private void initFields() {
       content_ = "";
       number_ = 0L;
+      integerList_ = java.util.Collections.emptyList();
+      roleChatInfo_ = org.gigas.chat.message.proto.ChatMessageFactory.RoleChatInfo.getDefaultInstance();
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -241,6 +383,12 @@ public final class ChatMessageFactory {
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         output.writeInt64(2, number_);
       }
+      for (int i = 0; i < integerList_.size(); i++) {
+        output.writeInt32(3, integerList_.get(i));
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeMessage(4, roleChatInfo_);
+      }
     }
 
     private int memoizedSerializedSize = -1;
@@ -256,6 +404,19 @@ public final class ChatMessageFactory {
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
           .computeInt64Size(2, number_);
+      }
+      {
+        int dataSize = 0;
+        for (int i = 0; i < integerList_.size(); i++) {
+          dataSize += com.google.protobuf.CodedOutputStream
+            .computeInt32SizeNoTag(integerList_.get(i));
+        }
+        size += dataSize;
+        size += 1 * getIntegerListList().size();
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(4, roleChatInfo_);
       }
       memoizedSerializedSize = size;
       return size;
@@ -356,6 +517,10 @@ public final class ChatMessageFactory {
         bitField0_ = (bitField0_ & ~0x00000001);
         number_ = 0L;
         bitField0_ = (bitField0_ & ~0x00000002);
+        integerList_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000004);
+        roleChatInfo_ = org.gigas.chat.message.proto.ChatMessageFactory.RoleChatInfo.getDefaultInstance();
+        bitField0_ = (bitField0_ & ~0x00000008);
         return this;
       }
 
@@ -387,6 +552,15 @@ public final class ChatMessageFactory {
           to_bitField0_ |= 0x00000002;
         }
         result.number_ = number_;
+        if (((bitField0_ & 0x00000004) == 0x00000004)) {
+          integerList_ = java.util.Collections.unmodifiableList(integerList_);
+          bitField0_ = (bitField0_ & ~0x00000004);
+        }
+        result.integerList_ = integerList_;
+        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.roleChatInfo_ = roleChatInfo_;
         result.bitField0_ = to_bitField0_;
         return result;
       }
@@ -400,6 +574,19 @@ public final class ChatMessageFactory {
         }
         if (other.hasNumber()) {
           setNumber(other.getNumber());
+        }
+        if (!other.integerList_.isEmpty()) {
+          if (integerList_.isEmpty()) {
+            integerList_ = other.integerList_;
+            bitField0_ = (bitField0_ & ~0x00000004);
+          } else {
+            ensureIntegerListIsMutable();
+            integerList_.addAll(other.integerList_);
+          }
+          
+        }
+        if (other.hasRoleChatInfo()) {
+          mergeRoleChatInfo(other.getRoleChatInfo());
         }
         return this;
       }
@@ -571,6 +758,185 @@ public final class ChatMessageFactory {
         bitField0_ = (bitField0_ & ~0x00000002);
         number_ = 0L;
         
+        return this;
+      }
+
+      // repeated int32 integerList = 3;
+      private java.util.List<java.lang.Integer> integerList_ = java.util.Collections.emptyList();
+      private void ensureIntegerListIsMutable() {
+        if (!((bitField0_ & 0x00000004) == 0x00000004)) {
+          integerList_ = new java.util.ArrayList<java.lang.Integer>(integerList_);
+          bitField0_ |= 0x00000004;
+         }
+      }
+      /**
+       * <code>repeated int32 integerList = 3;</code>
+       *
+       * <pre>
+       *整型数组
+       * </pre>
+       */
+      public java.util.List<java.lang.Integer>
+          getIntegerListList() {
+        return java.util.Collections.unmodifiableList(integerList_);
+      }
+      /**
+       * <code>repeated int32 integerList = 3;</code>
+       *
+       * <pre>
+       *整型数组
+       * </pre>
+       */
+      public int getIntegerListCount() {
+        return integerList_.size();
+      }
+      /**
+       * <code>repeated int32 integerList = 3;</code>
+       *
+       * <pre>
+       *整型数组
+       * </pre>
+       */
+      public int getIntegerList(int index) {
+        return integerList_.get(index);
+      }
+      /**
+       * <code>repeated int32 integerList = 3;</code>
+       *
+       * <pre>
+       *整型数组
+       * </pre>
+       */
+      public Builder setIntegerList(
+          int index, int value) {
+        ensureIntegerListIsMutable();
+        integerList_.set(index, value);
+        
+        return this;
+      }
+      /**
+       * <code>repeated int32 integerList = 3;</code>
+       *
+       * <pre>
+       *整型数组
+       * </pre>
+       */
+      public Builder addIntegerList(int value) {
+        ensureIntegerListIsMutable();
+        integerList_.add(value);
+        
+        return this;
+      }
+      /**
+       * <code>repeated int32 integerList = 3;</code>
+       *
+       * <pre>
+       *整型数组
+       * </pre>
+       */
+      public Builder addAllIntegerList(
+          java.lang.Iterable<? extends java.lang.Integer> values) {
+        ensureIntegerListIsMutable();
+        super.addAll(values, integerList_);
+        
+        return this;
+      }
+      /**
+       * <code>repeated int32 integerList = 3;</code>
+       *
+       * <pre>
+       *整型数组
+       * </pre>
+       */
+      public Builder clearIntegerList() {
+        integerList_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000004);
+        
+        return this;
+      }
+
+      // optional .RoleChatInfo roleChatInfo = 4;
+      private org.gigas.chat.message.proto.ChatMessageFactory.RoleChatInfo roleChatInfo_ = org.gigas.chat.message.proto.ChatMessageFactory.RoleChatInfo.getDefaultInstance();
+      /**
+       * <code>optional .RoleChatInfo roleChatInfo = 4;</code>
+       *
+       * <pre>
+       *roleChatInfo
+       * </pre>
+       */
+      public boolean hasRoleChatInfo() {
+        return ((bitField0_ & 0x00000008) == 0x00000008);
+      }
+      /**
+       * <code>optional .RoleChatInfo roleChatInfo = 4;</code>
+       *
+       * <pre>
+       *roleChatInfo
+       * </pre>
+       */
+      public org.gigas.chat.message.proto.ChatMessageFactory.RoleChatInfo getRoleChatInfo() {
+        return roleChatInfo_;
+      }
+      /**
+       * <code>optional .RoleChatInfo roleChatInfo = 4;</code>
+       *
+       * <pre>
+       *roleChatInfo
+       * </pre>
+       */
+      public Builder setRoleChatInfo(org.gigas.chat.message.proto.ChatMessageFactory.RoleChatInfo value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        roleChatInfo_ = value;
+
+        bitField0_ |= 0x00000008;
+        return this;
+      }
+      /**
+       * <code>optional .RoleChatInfo roleChatInfo = 4;</code>
+       *
+       * <pre>
+       *roleChatInfo
+       * </pre>
+       */
+      public Builder setRoleChatInfo(
+          org.gigas.chat.message.proto.ChatMessageFactory.RoleChatInfo.Builder builderForValue) {
+        roleChatInfo_ = builderForValue.build();
+
+        bitField0_ |= 0x00000008;
+        return this;
+      }
+      /**
+       * <code>optional .RoleChatInfo roleChatInfo = 4;</code>
+       *
+       * <pre>
+       *roleChatInfo
+       * </pre>
+       */
+      public Builder mergeRoleChatInfo(org.gigas.chat.message.proto.ChatMessageFactory.RoleChatInfo value) {
+        if (((bitField0_ & 0x00000008) == 0x00000008) &&
+            roleChatInfo_ != org.gigas.chat.message.proto.ChatMessageFactory.RoleChatInfo.getDefaultInstance()) {
+          roleChatInfo_ =
+            org.gigas.chat.message.proto.ChatMessageFactory.RoleChatInfo.newBuilder(roleChatInfo_).mergeFrom(value).buildPartial();
+        } else {
+          roleChatInfo_ = value;
+        }
+
+        bitField0_ |= 0x00000008;
+        return this;
+      }
+      /**
+       * <code>optional .RoleChatInfo roleChatInfo = 4;</code>
+       *
+       * <pre>
+       *roleChatInfo
+       * </pre>
+       */
+      public Builder clearRoleChatInfo() {
+        roleChatInfo_ = org.gigas.chat.message.proto.ChatMessageFactory.RoleChatInfo.getDefaultInstance();
+
+        bitField0_ = (bitField0_ & ~0x00000008);
         return this;
       }
 

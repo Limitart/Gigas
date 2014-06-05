@@ -2,11 +2,14 @@
 
 package org.gigas.chat.message;
 
+import java.util.List;
+
 import org.gigas.chat.message.proto.ChatMessageFactory;
 import org.gigas.chat.message.proto.ChatMessageFactory.ChatInfo.Builder;
+import org.gigas.chat.message.proto.ChatMessageFactory.RoleChatInfo;
 import org.gigas.core.server.message.ProtoBufPackage;
 
-import com.google.protobuf.GeneratedMessageLite;
+import com.google.protobuf.MessageLite;
 
 
 public class ChatInfoMessageBuilder extends ProtoBufPackage {
@@ -14,6 +17,10 @@ public class ChatInfoMessageBuilder extends ProtoBufPackage {
 	private String content;// 聊天内容
 
 	private long number;// 发送者编号
+
+	private List<Integer> integerList;// 整型数组
+
+	private RoleChatInfo roleChatInfo;// roleChatInfo
 
 	/**
 	 *聊天内容setter
@@ -41,11 +48,39 @@ public class ChatInfoMessageBuilder extends ProtoBufPackage {
 	public long getNumber() {
 		return this.number;
 	}
+	/**
+	 *整型数组setter
+	 */
+	public void setIntegerList(List<Integer> integerList){ 
+		this.integerList=integerList;
+	}
+
+	/**
+	 *整型数组getter
+	 */
+	public List<Integer> getIntegerList() {
+		return this.integerList;
+	}
+	/**
+	 *roleChatInfosetter
+	 */
+	public void setRoleChatInfo(RoleChatInfo roleChatInfo){ 
+		this.roleChatInfo=roleChatInfo;
+	}
+
+	/**
+	 *roleChatInfogetter
+	 */
+	public RoleChatInfo getRoleChatInfo() {
+		return this.roleChatInfo;
+	}
 
 	public ChatMessageFactory.ChatInfo build() {
 		Builder builder = ChatMessageFactory.ChatInfo.newBuilder();
 		builder.setContent(this.content);
 		builder.setNumber(this.number);
+		builder.addAllIntegerList(this.integerList);
+		builder.setRoleChatInfo(this.roleChatInfo);
 		return builder.build();
 	}
 
@@ -55,7 +90,7 @@ public class ChatInfoMessageBuilder extends ProtoBufPackage {
 	}
 
 	@Override
-	public Class<? extends GeneratedMessageLite> getClazz() {
+	public Class<? extends MessageLite> getClazz() {
 		return ChatMessageFactory.ChatInfo.class;
 	}
 	

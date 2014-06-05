@@ -7,6 +7,8 @@ option optimize_for = LITE_RUNTIME;
 message ChatInfo {
 	optional string content=1;//聊天内容
 	optional int64 number=2;//发送者编号
+	repeated int32 integerList=3;//整型数组
+	optional RoleChatInfo roleChatInfo=4;//roleChatInfo
 }
 
 //玩家简要信息
