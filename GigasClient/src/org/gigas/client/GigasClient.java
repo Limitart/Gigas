@@ -83,7 +83,7 @@ public class GigasClient {
 				result.writeBytes(buf);
 				channel.writeAndFlush(result);
 				buf.resetReaderIndex();
-				Thread.sleep(5);
+				Thread.sleep(100000);
 			}
 			System.exit(0);
 		} catch (InterruptedException e) {

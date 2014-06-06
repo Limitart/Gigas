@@ -10,10 +10,8 @@ import io.netty.util.AttributeKey;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.gigas.chat.message.proto.ChatMessageFactory.ChatInfo;
-import org.gigas.core.server.BaseServer;
 import org.gigas.core.server.codec.ProtoBufCustomedDecoder;
 import org.gigas.core.server.handler.ProtoBufMessageHandler;
-import org.gigas.core.server.message.ProtoBufPackage;
 
 import com.google.protobuf.MessageLite;
 

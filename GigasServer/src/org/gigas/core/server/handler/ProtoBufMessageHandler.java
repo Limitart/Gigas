@@ -25,7 +25,7 @@ import com.google.protobuf.MessageLite;
 public class ProtoBufMessageHandler extends ChannelInboundHandlerAdapter {
 
 	private static Logger log = LogManager.getLogger(ProtoBufMessageHandler.class);
-	private final static AttributeKey<ByteBuf> BUFFERKEY = AttributeKey.valueOf("BUFFER");
+	private final static AttributeKey<ByteBuf> BUFFERKEY = AttributeKey.valueOf("BUFFERKEY");
 
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
 		log.info("channelActive");
@@ -128,6 +128,7 @@ public class ProtoBufMessageHandler extends ChannelInboundHandlerAdapter {
 		log.info(ctx.channel().remoteAddress() + "connected!");
 		Attribute<ByteBuf> attr = ctx.attr(BUFFERKEY);
 		attr.set(ctx.alloc().directBuffer());
+		BaseServer.getInstance().registerChannel(ctx.channel());
 	}
 
 	/**
@@ -138,6 +139,7 @@ public class ProtoBufMessageHandler extends ChannelInboundHandlerAdapter {
 		Attribute<ByteBuf> attr = ctx.attr(BUFFERKEY);
 		ByteBuf byteBuf = attr.getAndRemove();
 		byteBuf.release();
+		BaseServer.getInstance().unregisterChannel(ctx.channel());
 	}
 
 	public void channelWritabilityChanged(ChannelHandlerContext ctx) throws Exception {

@@ -7,7 +7,6 @@ import java.util.List;
 import org.gigas.chat.message.ChatInfoMessageBuilder;
 import org.gigas.chat.message.proto.ChatMessageFactory.ChatInfo;
 import org.gigas.chat.message.proto.ChatMessageFactory.RoleChatInfo;
-import org.gigas.core.exception.ServerException;
 import org.gigas.core.server.handler.IHandler;
 import org.gigas.utils.ChannelUtil;
 
@@ -38,8 +37,10 @@ public class ChatInfoHandler extends IHandler {
 		chatInfoMessageBuilder.setIntegerList(integerListList);
 		chatInfoMessageBuilder.setRoleChatInfo(roleChatInfo);
 		try {
-			ChannelUtil.sendMessage_Protobuf(getChannel(), chatInfoMessageBuilder, false);
-		} catch (ServerException e) {
+			// ChannelUtil.sendMessage_Protobuf(getChannel(),
+			// chatInfoMessageBuilder, false);
+			ChannelUtil.sendMessageToAll_Protobuf(chatInfoMessageBuilder, false);
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
