@@ -7,12 +7,13 @@ import java.util.Properties;
 import org.gigas.core.exception.ServerException;
 import org.gigas.core.server.BaseServer;
 
+/**
+ * 唯一id生成器
+ * 
+ * @author somebody
+ * 
+ */
 public class UniqueIdUtil {
-
-	public static void main(String[] args) {
-		System.out.println(System.currentTimeMillis());
-	}
-
 	private static Object UUIDHexLock = new Object();
 	private static Object Uid = new Object();
 
