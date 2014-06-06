@@ -3,6 +3,7 @@ package org.gigas.core.server.thread;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 
+import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.logging.log4j.LogManager;
@@ -42,24 +43,26 @@ public class ProtoBufBasedMessageSenderThread extends Thread implements IThread 
 				}
 			} else {
 				try {
-					Channel channel = poll.getChannel();
-					if (channel != null) {
+					List<Channel> channelList = poll.getSendChannelList();
+					if (channelList != null && channelList.size() > 0) {
 						MessageLite build = poll.build();
 						if (build == null) {
 							continue;
 						}
-						byte[] secirityBytes;
-						secirityBytes = BaseServer.getInstance().getServerConfig().getSecurityBytes();
-						byte[] byteArray = build.toByteArray();
-						ByteBuf buf = channel.alloc().directBuffer();
-						buf.writeBytes(byteArray);
-						ByteBuf result = channel.alloc().directBuffer();
-						result.writeBytes(secirityBytes);
-						result.writeInt(Long.SIZE / Byte.SIZE + buf.readableBytes());
-						result.writeLong(poll.getId());
-						result.writeBytes(buf);
-						channel.writeAndFlush(result);
-						buf.release();
+						for (Channel channel : channelList) {
+							byte[] secirityBytes;
+							secirityBytes = BaseServer.getInstance().getServerConfig().getSecurityBytes();
+							byte[] byteArray = build.toByteArray();
+							ByteBuf buf = channel.alloc().directBuffer();
+							buf.writeBytes(byteArray);
+							ByteBuf result = channel.alloc().directBuffer();
+							result.writeBytes(secirityBytes);
+							result.writeInt(Long.SIZE / Byte.SIZE + buf.readableBytes());
+							result.writeLong(poll.getId());
+							result.writeBytes(buf);
+							channel.writeAndFlush(result);
+							buf.release();
+						}
 					}
 				} catch (Exception e) {
 					log.error(e, e);

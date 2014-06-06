@@ -44,7 +44,7 @@ public class ProtoBufBasedMessageHandleThread extends Thread implements IThread 
 					ProtoBufDictionary messageDictionary = BaseServer.getInstance().getMessageDictionary();
 					if (messageDictionary != null) {
 						IHandler handler = messageDictionary.getHandler(poll.getId());
-						handler.setChannel(poll.getChannel());
+						handler.setChannel(poll.getSrcChannel());
 						handler.setMessageId(poll.getId());
 						handler.handleMessage(poll.build());
 					}

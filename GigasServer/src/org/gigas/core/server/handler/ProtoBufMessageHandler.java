@@ -105,7 +105,7 @@ public class ProtoBufMessageHandler extends ChannelInboundHandlerAdapter {
 					return excuteDecode;
 				}
 			};
-			protoBufPackage.setChannel(ctx.channel());
+			protoBufPackage.setSrcChannel(ctx.channel());
 			BaseServer.getInstance().addHandleTask(protoBufPackage);
 			tempBuf.discardReadBytes();// 丢弃已读取字节
 		} catch (Exception e) {

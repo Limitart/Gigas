@@ -1,5 +1,8 @@
 package org.gigas.core.server.message;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import io.netty.channel.Channel;
 
 import com.google.protobuf.MessageLite;
@@ -11,29 +14,59 @@ import com.google.protobuf.MessageLite;
  * 
  */
 public abstract class ProtoBufPackage implements IMessage {
-	protected Channel channel;
+	protected List<Channel> sendChannelList = new LinkedList<Channel>();
+	protected Channel srcChannel;
 	protected Class<? extends MessageLite> Clazz;
 
 	public abstract Class<? extends MessageLite> getClazz();
 
 	/**
 	 * 构建MessageLite实例
+	 * 
 	 * @return
 	 */
 	public abstract MessageLite build();
 
 	/**
-	 * 客户端channel
+	 * 添加需要发送的channel
 	 */
-	public Channel getChannel() {
-		return channel;
+	public void addSendChannel(Channel channel) {
+		sendChannelList.add(channel);
 	}
 
 	/**
-	 * 客户端channel
+	 * 添加需要发送的channel列表
+	 * @param list
 	 */
-	public void setChannel(Channel channel) {
-		this.channel = channel;
+	public void addSendChannelAll(List<Channel> list) {
+		sendChannelList.addAll(list);
+	}
+
+	/**
+	 * 获取需要发送的channel列表
+	 * 
+	 * @return
+	 */
+	public List<Channel> getSendChannelList() {
+		return this.sendChannelList;
+	}
+
+	/**
+	 * 得到消息来源的channel
+	 * 
+	 * @return
+	 */
+	public Channel getSrcChannel() {
+		return srcChannel;
+	}
+
+	/**
+	 * 设置消息来源的channel
+	 * 
+	 * @param srcChannel
+	 */
+	public void setSrcChannel(Channel srcChannel) {
+		this.srcChannel = srcChannel;
 	}
 
 	/**
