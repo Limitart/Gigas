@@ -21,8 +21,8 @@ import com.google.protobuf.MessageLite;
  */
 public abstract class ProtoBufDictionary {
 	private static Logger log = LogManager.getLogger(ProtoBufDictionary.class);
-	private HashMap<Long, ProtoBufPackage> id_messageMap = new HashMap<>();
-	private HashMap<Long, Class<? extends IHandler>> id_handlerMap = new HashMap<>();
+	private HashMap<Integer, ProtoBufPackage> id_messageMap = new HashMap<>();
+	private HashMap<Integer, Class<? extends IHandler>> id_handlerMap = new HashMap<>();
 
 	/**
 	 * 获得消息类
@@ -34,7 +34,7 @@ public abstract class ProtoBufDictionary {
 	 * @throws InstantiationException
 	 */
 	@SuppressWarnings("rawtypes")
-	public Builder getMessage(long id) throws MessageException, InstantiationException, IllegalAccessException {
+	public Builder getMessage(final int id) throws MessageException, InstantiationException, IllegalAccessException {
 		if (!id_messageMap.containsKey(id)) {
 			throw new MessageException("id:" + id + " message not exist!");
 		}
@@ -65,7 +65,7 @@ public abstract class ProtoBufDictionary {
 	 * @throws InstantiationException
 	 * @throws IllegalAccessException
 	 */
-	public IHandler getHandler(long id) throws MessageException, InstantiationException, IllegalAccessException {
+	public IHandler getHandler(final int id) throws MessageException, InstantiationException, IllegalAccessException {
 		if (!id_handlerMap.containsKey(id)) {
 			throw new MessageException("id:" + id + " handler not exist!");
 		}
@@ -79,7 +79,7 @@ public abstract class ProtoBufDictionary {
 	 * @param messageClass
 	 * @param handlerClass
 	 */
-	public void register(long id, Class<? extends MessageLite> messageLite, Class<? extends IHandler> handlerClass) {
+	public void register(final int id, final Class<? extends MessageLite> messageLite, Class<? extends IHandler> handlerClass) {
 		try {
 			putMessage(id, messageLite);
 			putHanlder(id, handlerClass);
@@ -96,13 +96,13 @@ public abstract class ProtoBufDictionary {
 	 * @param clazz
 	 * @throws MessageException
 	 */
-	private void putMessage(final long id, final Class<? extends MessageLite> messageLite) throws MessageException {
+	private void putMessage(final int id, final Class<? extends MessageLite> messageLite) throws MessageException {
 		if (id_messageMap.containsKey(id)) {
 			throw new MessageException("id:" + id + " duplicate message");
 		}
 		ProtoBufPackage protoBufMessageAbstract = new ProtoBufPackage() {
 			@Override
-			public long getId() {
+			public int getId() {
 				return id;
 			}
 
@@ -126,7 +126,7 @@ public abstract class ProtoBufDictionary {
 	 * @param clazz
 	 * @throws MessageException
 	 */
-	private void putHanlder(long id, Class<? extends IHandler> clazz) throws MessageException {
+	private void putHanlder(final int id, final Class<? extends IHandler> clazz) throws MessageException {
 		if (id_handlerMap.containsKey(id)) {
 			throw new MessageException("id:" + id + " duplicate handler");
 		}

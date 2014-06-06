@@ -13,5 +13,5 @@ public interface IMessage {
 	 * 
 	 * @return
 	 */
-	public long getId();
+	public int getId();
 }

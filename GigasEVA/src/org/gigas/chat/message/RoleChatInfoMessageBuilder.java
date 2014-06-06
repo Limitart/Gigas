@@ -83,7 +83,7 @@ public class RoleChatInfoMessageBuilder extends ProtoBufPackage {
 	}
 
 	@Override
-	public long getId() {
+	public int getId() {
 		return 1002;
 	}
 

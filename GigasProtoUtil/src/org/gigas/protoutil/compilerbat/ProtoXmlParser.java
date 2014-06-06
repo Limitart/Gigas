@@ -144,7 +144,7 @@ public class ProtoXmlParser {
 			buildMethodBodyBuffer = new StringBuffer();
 			javaMethodStringBuffer.append("\t\treturn builder.build();\r\n\t}\r\n\r\n");
 			javaMethodStringBuffer.append("\t@Override\r\n");
-			javaMethodStringBuffer.append("\tpublic long getId() {\r\n");
+			javaMethodStringBuffer.append("\tpublic int getId() {\r\n");
 			javaMethodStringBuffer.append("\t\treturn " + id + ";\r\n");
 			javaMethodStringBuffer.append("\t}\r\n\r\n");
 			javaMethodStringBuffer.append("\t@Override\r\n");

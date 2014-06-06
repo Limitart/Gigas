@@ -86,7 +86,7 @@ public class ChatInfoMessageBuilder extends ProtoBufPackage {
 	}
 
 	@Override
-	public long getId() {
+	public int getId() {
 		return 1001;
 	}
 

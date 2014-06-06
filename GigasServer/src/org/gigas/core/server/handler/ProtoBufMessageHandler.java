@@ -1,7 +1,6 @@
 package org.gigas.core.server.handler;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -66,18 +65,19 @@ public class ProtoBufMessageHandler extends ChannelInboundHandlerAdapter {
 					return;
 				}
 			}
-			if (readableBytes < Integer.SIZE/Byte.SIZE) {// 包头的长度不够
+			if (readableBytes < Integer.SIZE / Byte.SIZE) {// 包头的长度不够
 				return;
 			}
 			tempBuf.markReaderIndex();// 标记当前readindex
 			int length = tempBuf.readInt();
 			int afterHeadLength = tempBuf.readableBytes();// 去除包头后的长度
+			log.debug("nowLentgh->" + afterHeadLength + " needLentgh->" + length);
 			if (afterHeadLength < length) {
 				tempBuf.resetReaderIndex();// 重置当前readindex
 				return;
 			}
-			final long id = tempBuf.readLong();
-			ByteBuf body = ByteBufAllocator.DEFAULT.buffer(length - Long.SIZE/Byte.SIZE);
+			final int id = tempBuf.readInt();
+			ByteBuf body = ctx.alloc().directBuffer(length - Integer.SIZE / Byte.SIZE);
 			tempBuf.readBytes(body);
 			final MessageLite message = BaseServer.getInstance().getMessageDictionary().getMessage(id).build();
 			if (message == null) {// 没有找到对应的消息类
@@ -91,7 +91,7 @@ public class ProtoBufMessageHandler extends ChannelInboundHandlerAdapter {
 			ProtoBufPackage protoBufPackage = new ProtoBufPackage() {
 
 				@Override
-				public long getId() {
+				public int getId() {
 					return id;
 				}
 
