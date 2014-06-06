@@ -54,6 +54,7 @@ public class GigasClient {
 		try {
 			ChannelFuture sync = boot.connect("localhost", 8888).sync();
 			Channel channel = sync.channel();
+			int count = 0;
 			while (channel.isActive()) {
 				ChatInfoMessageBuilder msg = new ChatInfoMessageBuilder();
 				RoleChatInfoMessageBuilder roleChatInfoMessageBuilder = new RoleChatInfoMessageBuilder();
@@ -63,7 +64,7 @@ public class GigasClient {
 				roleChatInfoMessageBuilder.setSex(true);
 				RoleChatInfo build2 = roleChatInfoMessageBuilder.build();
 				msg.setContent("hehe");
-				msg.setNumber(111111l);
+				msg.setNumber(count++);
 				List<Integer> list = new ArrayList<Integer>();
 				list.add(123);
 				list.add(234);
@@ -83,7 +84,7 @@ public class GigasClient {
 				channel.writeAndFlush(result);
 				buf.resetReaderIndex();
 				System.out.println("write");
-				Thread.sleep(1000);
+				Thread.sleep(1);
 			}
 			System.exit(0);
 		} catch (InterruptedException e) {

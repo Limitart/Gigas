@@ -5,8 +5,8 @@ import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-
-import java.util.HashMap;
+import io.netty.util.Attribute;
+import io.netty.util.AttributeKey;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -26,7 +26,7 @@ import com.google.protobuf.MessageLite;
 public class ProtoBufMessageHandler extends ChannelInboundHandlerAdapter {
 
 	private static Logger log = LogManager.getLogger(ProtoBufMessageHandler.class);
-	private HashMap<ChannelHandlerContext, ByteBuf> byteBufMap = new HashMap<>();
+	private final static AttributeKey<ByteBuf> BUFFERKEY = AttributeKey.valueOf("BUFFER");
 
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
 		log.info("channelActive");
@@ -45,10 +45,11 @@ public class ProtoBufMessageHandler extends ChannelInboundHandlerAdapter {
 			return;
 		}
 		ByteBuf buffer = (ByteBuf) msg;
-		if (!byteBufMap.containsKey(ctx)) {
-			byteBufMap.put(ctx, ByteBufAllocator.DEFAULT.buffer());
+		Attribute<ByteBuf> attr = ctx.attr(BUFFERKEY);
+		ByteBuf tempBuf = attr.get();
+		if (tempBuf == null) {
+			return;
 		}
-		ByteBuf tempBuf = byteBufMap.get(ctx);
 		tempBuf.writeBytes(buffer);
 		buffer.release();
 		try {
@@ -121,6 +122,8 @@ public class ProtoBufMessageHandler extends ChannelInboundHandlerAdapter {
 	 */
 	public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
 		log.info(ctx.channel().remoteAddress() + "connected!");
+		Attribute<ByteBuf> attr = ctx.attr(BUFFERKEY);
+		attr.set(ctx.alloc().directBuffer());
 	}
 
 	/**
@@ -128,7 +131,9 @@ public class ProtoBufMessageHandler extends ChannelInboundHandlerAdapter {
 	 */
 	public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
 		log.info(ctx.channel().remoteAddress() + "disconnected!");
-		byteBufMap.remove(ctx);
+		Attribute<ByteBuf> attr = ctx.attr(BUFFERKEY);
+		ByteBuf byteBuf = attr.getAndRemove();
+		byteBuf.release();
 	}
 
 	public void channelWritabilityChanged(ChannelHandlerContext ctx) throws Exception {
