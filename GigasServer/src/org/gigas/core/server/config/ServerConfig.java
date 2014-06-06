@@ -9,6 +9,7 @@ package org.gigas.core.server.config;
 public class ServerConfig {
 	private int port;
 	private byte[] securityBytes;
+	private int serverId;
 
 	public int getPort() {
 		return port;
@@ -24,6 +25,14 @@ public class ServerConfig {
 
 	public void setSecurityBytes(byte[] securityBytes) {
 		this.securityBytes = securityBytes;
+	}
+
+	public int getServerId() {
+		return serverId;
+	}
+
+	public void setServerId(int serverId) {
+		this.serverId = serverId;
 	}
 
 }

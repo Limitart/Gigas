@@ -124,12 +124,23 @@ public class BaseServer implements IServer {
 			for (Element temp : list) {
 				String name = temp.getName();
 				if ("port".equalsIgnoreCase(name)) {
-					int port = Integer.parseInt(temp.getValue());
-					this.serverConfig.setPort(port);
+					try {
+						int port = Integer.parseInt(temp.getValue());
+						this.serverConfig.setPort(port);
+					} catch (Exception e) {
+						throw new ServerException("port config error!");
+					}
 				} else if ("securityinfo".equalsIgnoreCase(name)) {
 					String sucurityStr = temp.getValue();
 					byte[] bytes = sucurityStr.getBytes("UTF-8");
 					this.serverConfig.setSecurityBytes(bytes);
+				} else if ("serverid".equalsIgnoreCase(name)) {
+					try {
+						int serverid = Integer.parseInt(temp.getValue());
+						this.serverConfig.setServerId(serverid);
+					} catch (Exception e) {
+						throw new ServerException("serverid error!");
+					}
 				}
 			}
 		} catch (Exception e) {
@@ -246,22 +257,5 @@ public class BaseServer implements IServer {
 
 	public ServerConfig getServerConfig() {
 		return serverConfig;
-	}
-
-	public static void main(String[] args) throws ServerException {
-		// BaseServer.getInstance(8888,
-		// ChannelInitializerEnum.STRING_CUSTOMED).startServer();
-		try {
-			BaseServer instance = BaseServer.getInstance(ChannelInitializerEnum.GOOGLE_PROTOCOL_BUFFER);
-			instance.setMessageDictionary(new ProtoBufDictionary() {
-				@Override
-				public void registerAllMessage() {
-					// register(1000, CarMessage.class, CarHandler.class);
-				}
-			});
-			instance.startServer();
-		} catch (MessageException e) {
-			e.printStackTrace();
-		}
 	}
 }
