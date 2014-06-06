@@ -75,6 +75,7 @@ public class ChatInfoMessageBuilder extends ProtoBufPackage {
 		return this.roleChatInfo;
 	}
 
+	@Override
 	public ChatMessageFactory.ChatInfo build() {
 		Builder builder = ChatMessageFactory.ChatInfo.newBuilder();
 		builder.setContent(this.content);

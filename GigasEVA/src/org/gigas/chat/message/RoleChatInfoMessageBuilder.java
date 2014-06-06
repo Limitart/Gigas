@@ -72,6 +72,7 @@ public class RoleChatInfoMessageBuilder extends ProtoBufPackage {
 		return this.sex;
 	}
 
+	@Override
 	public ChatMessageFactory.RoleChatInfo build() {
 		Builder builder = ChatMessageFactory.RoleChatInfo.newBuilder();
 		builder.setRoleId(this.roleId);

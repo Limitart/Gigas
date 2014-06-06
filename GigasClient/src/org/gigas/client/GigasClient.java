@@ -78,12 +78,11 @@ public class GigasClient {
 				buf.writeBytes(byteArray);
 				ByteBuf result = ByteBufAllocator.DEFAULT.buffer();
 				result.writeBytes(secirityBytes);
-				result.writeInt(8 + buf.readableBytes());
+				result.writeInt(Long.SIZE / Byte.SIZE + buf.readableBytes());
 				result.writeLong(1001);
 				result.writeBytes(buf);
 				channel.writeAndFlush(result);
 				buf.resetReaderIndex();
-				System.out.println("write");
 				Thread.sleep(1);
 			}
 			System.exit(0);

@@ -31,7 +31,7 @@ public class ProtoXmlParser {
 	private final static String setMethodBody = "\t\tthis.{@}={#};\r\n\t}\r\n";
 	private final static String getMethod = "\tpublic {@} get{#}() {\r\n";
 	private final static String getMethodBody = "\t\treturn this.{@};\r\n\t}\r\n";
-	private final static String buildMethodHead = "\tpublic {@}MessageFactory.{#} build() {\r\n";
+	private final static String buildMethodHead = "\t@Override\r\n\tpublic {@}MessageFactory.{#} build() {\r\n";
 	private final static String buildMethodBody = "\t\tBuilder builder = {@}MessageFactory.{#}.newBuilder();\r\n";
 	private final static String javaHandlerHead = "package {@}.handler;\r\n";
 	private final static String javaHandlerImport = "import {@}.message.proto.{#}MessageFactory.{$};\r\nimport org.gigas.core.server.handler.IHandler;\r\n\r\nimport com.google.protobuf.MessageLite;\r\n\r\n";

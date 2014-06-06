@@ -66,7 +66,7 @@ public class ProtoBufMessageHandler extends ChannelInboundHandlerAdapter {
 					return;
 				}
 			}
-			if (readableBytes < 4) {// 包头的长度不够
+			if (readableBytes < Integer.SIZE/Byte.SIZE) {// 包头的长度不够
 				return;
 			}
 			tempBuf.markReaderIndex();// 标记当前readindex
@@ -77,7 +77,7 @@ public class ProtoBufMessageHandler extends ChannelInboundHandlerAdapter {
 				return;
 			}
 			final long id = tempBuf.readLong();
-			ByteBuf body = ByteBufAllocator.DEFAULT.buffer(length - 8);
+			ByteBuf body = ByteBufAllocator.DEFAULT.buffer(length - Long.SIZE/Byte.SIZE);
 			tempBuf.readBytes(body);
 			final MessageLite message = BaseServer.getInstance().getMessageDictionary().getMessage(id).build();
 			if (message == null) {// 没有找到对应的消息类

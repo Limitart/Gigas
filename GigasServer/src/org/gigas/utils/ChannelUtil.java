@@ -24,6 +24,8 @@ public class ChannelUtil {
 	 *            通道
 	 * @param message
 	 *            消息
+	 * @param immediately
+	 *            立即发送(或加入缓存)
 	 * @throws ServerException
 	 */
 	public static void sendMessage_Protobuf(Channel channel, ProtoBufPackage message, boolean immediately) throws ServerException {
@@ -42,7 +44,7 @@ public class ChannelUtil {
 			buf.writeBytes(byteArray);
 			ByteBuf result = channel.alloc().directBuffer();
 			result.writeBytes(secirityBytes);
-			result.writeInt(8 + buf.readableBytes());
+			result.writeInt(Long.SIZE / Byte.SIZE + buf.readableBytes());
 			result.writeLong(message.getId());
 			result.writeBytes(buf);
 			channel.writeAndFlush(result);
