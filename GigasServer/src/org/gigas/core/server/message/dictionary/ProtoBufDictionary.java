@@ -110,6 +110,11 @@ public abstract class ProtoBufDictionary {
 			public Class<? extends MessageLite> getClazz() {
 				return messageLite;
 			}
+
+			@Override
+			public MessageLite build() {
+				return null;
+			}
 		};
 		id_messageMap.put(id, protoBufMessageAbstract);
 	}

@@ -7,8 +7,10 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.gigas.core.server.BaseServer;
 import org.gigas.core.server.message.ProtoBufPackage;
-import org.gigas.utils.MessageUtil;
+
+import com.google.protobuf.MessageLite;
 
 /**
  * ProtoBuf消息发送线程
@@ -41,9 +43,23 @@ public class ProtoBufBasedMessageSenderThread extends Thread implements IThread 
 			} else {
 				try {
 					Channel channel = poll.getChannel();
-					if (channel != null && channel.isActive()) {
-						ByteBuf buildByteBuf = MessageUtil.buildByteBuf(poll);
-						channel.writeAndFlush(buildByteBuf);
+					if (channel != null) {
+						MessageLite build = poll.build();
+						if (build == null) {
+							continue;
+						}
+						byte[] secirityBytes;
+						secirityBytes = BaseServer.getInstance().getServerConfig().getSecurityBytes();
+						byte[] byteArray = build.toByteArray();
+						ByteBuf buf = channel.alloc().directBuffer();
+						buf.writeBytes(byteArray);
+						ByteBuf result = channel.alloc().directBuffer();
+						result.writeBytes(secirityBytes);
+						result.writeInt(8 + buf.readableBytes());
+						result.writeLong(poll.getId());
+						result.writeBytes(buf);
+						channel.writeAndFlush(result);
+						buf.release();
 					}
 				} catch (Exception e) {
 					log.error(e, e);

@@ -99,8 +99,12 @@ public class ProtoBufMessageHandler extends ChannelInboundHandlerAdapter {
 				public Class<? extends MessageLite> getClazz() {
 					return message.getClass();
 				}
+
+				@Override
+				public MessageLite build() {
+					return excuteDecode;
+				}
 			};
-			protoBufPackage.setMessage(excuteDecode);
 			protoBufPackage.setChannel(ctx.channel());
 			BaseServer.getInstance().addHandleTask(protoBufPackage);
 			tempBuf.discardReadBytes();// 丢弃已读取字节

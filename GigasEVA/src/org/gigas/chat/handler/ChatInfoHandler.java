@@ -4,9 +4,12 @@ package org.gigas.chat.handler;
 
 import java.util.List;
 
+import org.gigas.chat.message.ChatInfoMessageBuilder;
 import org.gigas.chat.message.proto.ChatMessageFactory.ChatInfo;
 import org.gigas.chat.message.proto.ChatMessageFactory.RoleChatInfo;
+import org.gigas.core.exception.ServerException;
 import org.gigas.core.server.handler.IHandler;
+import org.gigas.utils.ChannelUtil;
 
 import com.google.protobuf.MessageLite;
 
@@ -29,5 +32,15 @@ public class ChatInfoHandler extends IHandler {
 		long roleId = roleChatInfo.getRoleId();
 		boolean sex = roleChatInfo.getSex();
 		System.out.println("name->" + name + " level->" + level + " roleId->" + roleId + " sex->" + sex);
+		ChatInfoMessageBuilder chatInfoMessageBuilder = new ChatInfoMessageBuilder();
+		chatInfoMessageBuilder.setNumber(number);
+		chatInfoMessageBuilder.setContent("content");
+		chatInfoMessageBuilder.setIntegerList(integerListList);
+		chatInfoMessageBuilder.setRoleChatInfo(roleChatInfo);
+		try {
+			ChannelUtil.sendMessage_Protobuf(getChannel(), chatInfoMessageBuilder, false);
+		} catch (ServerException e) {
+			e.printStackTrace();
+		}
 	}
 }
