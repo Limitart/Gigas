@@ -1,4 +1,4 @@
-package org.gigas.client;
+package org.gigas.core.client.handler;
 
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
@@ -6,6 +6,7 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.gigas.core.client.BaseClient;
 
 /**
  * 字符消息Hanlder
@@ -14,9 +15,9 @@ import org.apache.logging.log4j.Logger;
  * 
  */
 @Sharable
-public class StringBasedServerHandler extends ChannelInboundHandlerAdapter {
+public class StringMessageHandler extends ChannelInboundHandlerAdapter {
 
-	private static Logger log = LogManager.getLogger(StringBasedServerHandler.class);
+	private static Logger log = LogManager.getLogger(StringMessageHandler.class);
 
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
 		log.info("channelActive");
@@ -30,7 +31,22 @@ public class StringBasedServerHandler extends ChannelInboundHandlerAdapter {
 	 * 读取消息
 	 */
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-
+		String str = (String) msg;
+		// decode
+		//
+		// push to cache
+		BaseClient.getInstance().addHandleTask(str);
+		// if ("quit".equalsIgnoreCase(str)) {
+		// ctx.close();
+		// } else if ("stopserver".equalsIgnoreCase(str)) {
+		// StringBasedServer.getInstance().stopServer();
+		// } else {
+		// StringBasedServer instance = StringBasedServer.getInstance();
+		// for (Channel temp : instance.getSessions()) {
+		// temp.writeAndFlush(str);
+		// }
+		// }
+		// log.info("received->" + str);
 	}
 
 	/**

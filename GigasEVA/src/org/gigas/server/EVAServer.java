@@ -20,6 +20,13 @@ public class EVAServer implements Runnable {
 		try {
 			messageServer = BaseServer.getInstance(ChannelInitializerEnum.GOOGLE_PROTOCOL_BUFFER);
 			messageServer.setMessageDictionary(new MessageDictionary());
+			Thread shutDownHookThread = new Thread(new Runnable() {
+				@Override
+				public void run() {
+					messageServer.stopServer();
+				}
+			});
+			Runtime.getRuntime().addShutdownHook(shutDownHookThread);
 			messageServer.startServer();
 		} catch (ServerException | MessageException e) {
 			e.printStackTrace();

@@ -1,7 +1,7 @@
-package org.gigas.client;
+package org.gigas.core.client.handler;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufAllocator;
+import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.Attribute;
@@ -9,9 +9,9 @@ import io.netty.util.AttributeKey;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.gigas.chat.message.proto.ChatMessageFactory.ChatInfo;
-import org.gigas.core.server.codec.ProtoBufCustomedDecoder;
-import org.gigas.core.server.handler.ProtoBufMessageHandler;
+import org.gigas.core.client.BaseClient;
+import org.gigas.core.client.codec.ProtoBufCustomedDecoder;
+import org.gigas.core.client.message.ProtoBufPackage;
 
 import com.google.protobuf.MessageLite;
 
@@ -21,17 +21,18 @@ import com.google.protobuf.MessageLite;
  * @author hank
  * 
  */
-public class ProtoBufBasedClientHandler extends ChannelInboundHandlerAdapter {
+@Sharable
+public class ProtoBufMessageHandler extends ChannelInboundHandlerAdapter {
 
 	private static Logger log = LogManager.getLogger(ProtoBufMessageHandler.class);
-	private final static AttributeKey<ByteBuf> BUFFERKEY = AttributeKey.valueOf("BUFFER");
+	private final static AttributeKey<ByteBuf> BUFFERKEY = AttributeKey.valueOf("BUFFERKEY");
 
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
-		log.info("channelActive");
+		// log.info("channelActive");
 	}
 
 	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-		log.info("channelInactive");
+		// log.info("channelInactive");
 	}
 
 	/**
@@ -52,35 +53,60 @@ public class ProtoBufBasedClientHandler extends ChannelInboundHandlerAdapter {
 		buffer.release();
 		try {
 			int readableBytes = tempBuf.readableBytes();// 可读的字节数
-			if (readableBytes < "gigassecurity".getBytes("UTF-8").length) {// 包头的长度不够
+			if (readableBytes < BaseClient.getInstance().getClientConfig().getSecurityBytes().length) {// 包头的长度不够
 				return;
 			}
-			byte[] sb = new byte["gigassecurity".getBytes("UTF-8").length];
+			byte[] sb = new byte[BaseClient.getInstance().getClientConfig().getSecurityBytes().length];
 			tempBuf.readBytes(sb);
 			for (int i = 0; i < sb.length; ++i) {
-				if (sb[i] != "gigassecurity".getBytes("UTF-8")[i]) {
+				if (sb[i] != BaseClient.getInstance().getClientConfig().getSecurityBytes()[i]) {
 					log.error("security bytes error! disconneted!");
 					ctx.close();
 					return;
 				}
 			}
-			if (readableBytes < 4) {// 包头的长度不够
+			if (readableBytes < Integer.SIZE / Byte.SIZE) {// 包头的长度不够
 				return;
 			}
 			tempBuf.markReaderIndex();// 标记当前readindex
 			int length = tempBuf.readInt();
 			int afterHeadLength = tempBuf.readableBytes();// 去除包头后的长度
+			log.debug("nowLentgh->" + afterHeadLength + " needLentgh->" + length);
 			if (afterHeadLength < length) {
 				tempBuf.resetReaderIndex();// 重置当前readindex
 				return;
 			}
-			final long id = tempBuf.readLong();
-			ByteBuf body = ByteBufAllocator.DEFAULT.buffer(length - 8);
+			final int id = tempBuf.readInt();
+			ByteBuf body = ctx.alloc().directBuffer(length - Integer.SIZE / Byte.SIZE);
 			tempBuf.readBytes(body);
-			ProtoBufCustomedDecoder protobufDecoder = new ProtoBufCustomedDecoder(ChatInfo.getDefaultInstance());
+			final MessageLite message = BaseClient.getInstance().getMessageDictionary().getMessage(id).build();
+			if (message == null) {// 没有找到对应的消息类
+				log.error("id:" + id + " not exist!");
+				ctx.close();
+				return;
+			}
+			ProtoBufCustomedDecoder protobufDecoder = new ProtoBufCustomedDecoder(message.getDefaultInstanceForType());
 			final MessageLite excuteDecode = protobufDecoder.excuteDecode(id, ctx, body);// 执行解码
-			ChatInfo info = (ChatInfo) excuteDecode;
-			System.out.println(info.getNumber());
+			// 得到的消息派发
+			ProtoBufPackage protoBufPackage = new ProtoBufPackage() {
+
+				@Override
+				public int getId() {
+					return id;
+				}
+
+				@Override
+				public Class<? extends MessageLite> getClazz() {
+					return message.getClass();
+				}
+
+				@Override
+				public MessageLite build() {
+					return excuteDecode;
+				}
+			};
+			protoBufPackage.setSrcChannel(ctx.channel());
+			BaseClient.getInstance().addHandleTask(protoBufPackage);
 			tempBuf.discardReadBytes();// 丢弃已读取字节
 		} catch (Exception e) {
 			log.error(e, e);
@@ -99,16 +125,17 @@ public class ProtoBufBasedClientHandler extends ChannelInboundHandlerAdapter {
 	 * 用户连接进来了
 	 */
 	public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
-		log.info(ctx.channel().remoteAddress() + "connected!");
+		log.info("connected to server->" + ctx.channel().remoteAddress());
 		Attribute<ByteBuf> attr = ctx.attr(BUFFERKEY);
 		attr.set(ctx.alloc().directBuffer());
+		BaseClient.getInstance().setSession(ctx.channel());
 	}
 
 	/**
 	 * 用户断开连接
 	 */
 	public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
-		log.info(ctx.channel().remoteAddress() + "disconnected!");
+		log.info("disconnected from server->" + ctx.channel().remoteAddress());
 		Attribute<ByteBuf> attr = ctx.attr(BUFFERKEY);
 		ByteBuf byteBuf = attr.getAndRemove();
 		byteBuf.release();
@@ -128,4 +155,5 @@ public class ProtoBufBasedClientHandler extends ChannelInboundHandlerAdapter {
 	public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
 		log.info("userEventTriggered");
 	}
+
 }

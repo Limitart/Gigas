@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<clientconfig>
+	<ip>192.168.5.72</ip>
+	<!--端口-->
+	<port>8888</port>
+	<!--消息安全码-->
+	<securityinfo>gigassecurity</securityinfo>
+</clientconfig>

@@ -28,11 +28,11 @@ public class ProtoBufMessageHandler extends ChannelInboundHandlerAdapter {
 	private final static AttributeKey<ByteBuf> BUFFERKEY = AttributeKey.valueOf("BUFFERKEY");
 
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
-		log.info("channelActive");
+		// log.info("channelActive");
 	}
 
 	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-		log.info("channelInactive");
+		// log.info("channelInactive");
 	}
 
 	/**

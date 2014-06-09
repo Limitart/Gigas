@@ -154,6 +154,7 @@ public class BaseServer implements IServer {
 		clientGroup.shutdownGracefully();
 		acceptorGroup.shutdownGracefully();
 		stop = true;
+		log.info("MainServer Stop!");
 	}
 
 	/**
@@ -188,7 +189,6 @@ public class BaseServer implements IServer {
 
 	@Override
 	public void startServer() throws MessageException {
-		// 服务器其他线程
 		if (protocolEnum.equals(ChannelInitializerEnum.STRING_CUSTOMED)) {
 			handleThread = new StringBasedMessageHandleThread("StringMessageHandle");
 		} else if (protocolEnum.equals(ChannelInitializerEnum.GOOGLE_PROTOCOL_BUFFER)) {
@@ -200,9 +200,19 @@ public class BaseServer implements IServer {
 			messageDictionary.registerAllMessage();
 		} else if (protocolEnum.equals(ChannelInitializerEnum.BYTE_CUSTOMED)) {
 		}
+		// 消息处理线程
 		((Thread) handleThread).start();
+		// 消息发送线程
 		((Thread) senderThread).start();
-		// 服务器
+		// 服务器关闭线程
+//		Thread shutDownHookThread = new Thread(new Runnable() {
+//			@Override
+//			public void run() {
+//				stopServer();
+//			}
+//		});
+//		Runtime.getRuntime().addShutdownHook(shutDownHookThread);
+		// 服务器主线程
 		Runnable runnable = new Runnable() {
 			@Override
 			public void run() {
