@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<serverconfig>
+	<!--端口-->
+	<port>8080</port>
+	<!--消息安全码-->
+	<securityinfo>gigassecurity</securityinfo>
+	<!--服务器编号-->
+	<serverid>1</serverid>
+</serverconfig>
