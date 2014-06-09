@@ -21,6 +21,9 @@ public enum ChannelInitializerEnum {
 	/**
 	 * 字符串消息自定义
 	 */
-	STRING_CUSTOMED;
-	
+	STRING_CUSTOMED,
+	/**
+	 * Http协议
+	 */
+	HTTP;
 }

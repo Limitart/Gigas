@@ -17,10 +17,12 @@ import org.apache.logging.log4j.Logger;
 import org.gigas.core.exception.MessageException;
 import org.gigas.core.exception.ServerException;
 import org.gigas.core.server.channelInitializer.ByteChannelIntializer;
+import org.gigas.core.server.channelInitializer.HttpChannelInitializer;
 import org.gigas.core.server.channelInitializer.ProtoBufChannelInitializer;
 import org.gigas.core.server.channelInitializer.StringChannelInitializer;
 import org.gigas.core.server.channelInitializer.enumeration.ChannelInitializerEnum;
 import org.gigas.core.server.config.ServerConfig;
+import org.gigas.core.server.handler.IHttpHandler;
 import org.gigas.core.server.message.dictionary.ProtoBufDictionary;
 import org.gigas.core.server.thread.IThread;
 import org.gigas.core.server.thread.ProtoBufBasedMessageHandleThread;
@@ -59,6 +61,8 @@ public class BaseServer implements IServer {
 	private IThread handleThread;
 	// 消息发送线程
 	private IThread senderThread;
+	// Http服务器Handler
+	private IHttpHandler httpHandler;
 
 	/**
 	 * 得到服务器实例
@@ -106,6 +110,8 @@ public class BaseServer implements IServer {
 			bootstrap.childHandler(new ProtoBufChannelInitializer());
 		} else if (enumeration.equals(ChannelInitializerEnum.BYTE_CUSTOMED)) {
 			bootstrap.childHandler(new ByteChannelIntializer());
+		} else if (enumeration.equals(ChannelInitializerEnum.HTTP)) {
+			bootstrap.childHandler(new HttpChannelInitializer());
 		}
 	}
 
@@ -190,28 +196,28 @@ public class BaseServer implements IServer {
 	@Override
 	public void startServer() throws MessageException {
 		if (protocolEnum.equals(ChannelInitializerEnum.STRING_CUSTOMED)) {
-			handleThread = new StringBasedMessageHandleThread("StringMessageHandle");
+			((Thread) (handleThread = new StringBasedMessageHandleThread("StringMessageHandle"))).start();
 		} else if (protocolEnum.equals(ChannelInitializerEnum.GOOGLE_PROTOCOL_BUFFER)) {
-			handleThread = new ProtoBufBasedMessageHandleThread("ProtoBufMessageHandle");
-			senderThread = new ProtoBufBasedMessageSenderThread("ProtoBufMessageSender");
+			((Thread) (handleThread = new ProtoBufBasedMessageHandleThread("ProtoBufMessageHandle"))).start();
+			((Thread) (senderThread = new ProtoBufBasedMessageSenderThread("ProtoBufMessageSender"))).start();
 			if (messageDictionary == null) {
 				throw new MessageException("messageDictionary is not set!please call setMessageDictionary first!");
 			}
 			messageDictionary.registerAllMessage();
 		} else if (protocolEnum.equals(ChannelInitializerEnum.BYTE_CUSTOMED)) {
+		} else if (protocolEnum.equals(ChannelInitializerEnum.HTTP)) {
+			if (httpHandler == null) {
+				throw new MessageException("http Handler is not set!");
+			}
 		}
-		// 消息处理线程
-		((Thread) handleThread).start();
-		// 消息发送线程
-		((Thread) senderThread).start();
 		// 服务器关闭线程
-//		Thread shutDownHookThread = new Thread(new Runnable() {
-//			@Override
-//			public void run() {
-//				stopServer();
-//			}
-//		});
-//		Runtime.getRuntime().addShutdownHook(shutDownHookThread);
+		// Thread shutDownHookThread = new Thread(new Runnable() {
+		// @Override
+		// public void run() {
+		// stopServer();
+		// }
+		// });
+		// Runtime.getRuntime().addShutdownHook(shutDownHookThread);
 		// 服务器主线程
 		Runnable runnable = new Runnable() {
 			@Override
@@ -267,5 +273,23 @@ public class BaseServer implements IServer {
 
 	public ServerConfig getServerConfig() {
 		return serverConfig;
+	}
+
+	public void setHttpHandler(IHttpHandler httpHandler) {
+		this.httpHandler = httpHandler;
+	}
+
+	public IHttpHandler getHttpHandler() {
+		return httpHandler;
+	}
+
+	public static void main(String[] args) {
+		try {
+			BaseServer.getInstance(ChannelInitializerEnum.HTTP).startServer();
+		} catch (MessageException e) {
+			e.printStackTrace();
+		} catch (ServerException e) {
+			e.printStackTrace();
+		}
 	}
 }

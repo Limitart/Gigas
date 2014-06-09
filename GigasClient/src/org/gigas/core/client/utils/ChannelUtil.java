@@ -3,8 +3,6 @@ package org.gigas.core.client.utils;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 
-import java.rmi.ServerException;
-
 import org.gigas.core.client.BaseClient;
 import org.gigas.core.client.message.ProtoBufPackage;
 import org.gigas.core.exception.ClientException;
@@ -28,7 +26,6 @@ public class ChannelUtil {
 	 *            消息
 	 * @param immediately
 	 *            立即发送(或加入缓存)
-	 * @throws ServerException
 	 * @throws ClientException
 	 */
 	public static void sendMessage_Protobuf(ProtoBufPackage message, boolean immediately) throws ClientException {
