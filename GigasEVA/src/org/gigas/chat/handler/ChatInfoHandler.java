@@ -33,7 +33,7 @@ public class ChatInfoHandler extends IHandler {
 		System.out.println("name->" + name + " level->" + level + " roleId->" + roleId + " sex->" + sex);
 		ChatInfoMessageBuilder chatInfoMessageBuilder = new ChatInfoMessageBuilder();
 		chatInfoMessageBuilder.setNumber(number);
-		chatInfoMessageBuilder.setContent("content");
+		chatInfoMessageBuilder.setContent(content);
 		chatInfoMessageBuilder.setIntegerList(integerListList);
 		chatInfoMessageBuilder.setRoleChatInfo(roleChatInfo);
 		try {

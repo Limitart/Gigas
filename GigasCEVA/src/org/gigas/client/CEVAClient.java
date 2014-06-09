@@ -33,7 +33,7 @@ public class CEVAClient implements Runnable {
 			while (true) {
 				String readLine = strin.readLine();
 				ChatInfoMessageBuilder build = new ChatInfoMessageBuilder();
-				build.setContent(readLine);
+				build.setContent(new String(readLine.getBytes(),"UTF-8"));
 				build.setIntegerList(new LinkedList<Integer>());
 				build.setNumber(System.currentTimeMillis());
 				RoleChatInfoMessageBuilder rb = new RoleChatInfoMessageBuilder();
