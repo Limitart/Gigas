@@ -51,8 +51,8 @@ public class ChannelUtil {
 			buf.writeBytes(byteArray);
 			ByteBuf result = session.alloc().directBuffer();
 			result.writeBytes(secirityBytes);
-			result.writeInt(Long.SIZE / Byte.SIZE + buf.readableBytes());
-			result.writeLong(message.getId());
+			result.writeInt(Integer.SIZE / Byte.SIZE + buf.readableBytes());
+			result.writeInt(message.getId());
 			result.writeBytes(buf);
 			session.writeAndFlush(result);
 			buf.release();

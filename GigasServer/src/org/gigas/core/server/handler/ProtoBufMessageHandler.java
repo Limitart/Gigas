@@ -71,7 +71,7 @@ public class ProtoBufMessageHandler extends ChannelInboundHandlerAdapter {
 			tempBuf.markReaderIndex();// 标记当前readindex
 			int length = tempBuf.readInt();
 			int afterHeadLength = tempBuf.readableBytes();// 去除包头后的长度
-			log.debug("nowLentgh->" + afterHeadLength + " needLentgh->" + length);
+//			log.debug("nowLentgh->" + afterHeadLength + " needLentgh->" + length);
 			if (afterHeadLength < length) {
 				tempBuf.resetReaderIndex();// 重置当前readindex
 				return;
@@ -82,7 +82,7 @@ public class ProtoBufMessageHandler extends ChannelInboundHandlerAdapter {
 			final MessageLite message = BaseServer.getInstance().getMessageDictionary().getMessage(id).build();
 			if (message == null) {// 没有找到对应的消息类
 				log.error("id:" + id + " not exist!");
-				ctx.close();
+//				ctx.close();
 				return;
 			}
 			ProtoBufCustomedDecoder protobufDecoder = new ProtoBufCustomedDecoder(message.getDefaultInstanceForType());

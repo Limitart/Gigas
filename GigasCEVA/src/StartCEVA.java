@@ -5,8 +5,7 @@ import org.gigas.core.exception.MessageException;
 public class StartCEVA {
 
 	public static void main(String[] args) throws MessageException, ClientException {
-		Thread thread = new Thread(new CEVAClient());
-		thread.start();
+		new Thread(new CEVAClient()).start();
 	}
 
 }

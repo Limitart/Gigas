@@ -52,7 +52,7 @@ public class ChannelUtil {
 			ByteBuf result = channel.alloc().directBuffer();
 			result.writeBytes(secirityBytes);
 			result.writeInt(Long.SIZE / Byte.SIZE + buf.readableBytes());
-			result.writeLong(message.getId());
+			result.writeInt(message.getId());
 			result.writeBytes(buf);
 			channel.writeAndFlush(result);
 			buf.release();
