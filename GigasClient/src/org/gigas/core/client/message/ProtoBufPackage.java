@@ -52,7 +52,7 @@ public abstract class ProtoBufPackage implements IMessage {
 	}
 
 	/**
-	 * 得到消息来源的channel
+	 * 得到消息来源的channel(不用主动使用)
 	 * 
 	 * @return
 	 */
@@ -61,7 +61,7 @@ public abstract class ProtoBufPackage implements IMessage {
 	}
 
 	/**
-	 * 设置消息来源的channel
+	 * 设置消息来源的channel(不用主动使用)
 	 * 
 	 * @param srcChannel
 	 */
