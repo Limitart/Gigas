@@ -9,6 +9,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.HashSet;
 import java.util.List;
 
@@ -22,7 +23,7 @@ import org.gigas.core.server.channelInitializer.ProtoBufChannelInitializer;
 import org.gigas.core.server.channelInitializer.StringChannelInitializer;
 import org.gigas.core.server.channelInitializer.enumeration.ChannelInitializerEnum;
 import org.gigas.core.server.config.ServerConfig;
-import org.gigas.core.server.handler.IHttpHandler;
+import org.gigas.core.server.handler.ihandler.IHttpHandler;
 import org.gigas.core.server.message.dictionary.ProtoBufDictionary;
 import org.gigas.core.server.thread.IThread;
 import org.gigas.core.server.thread.ProtoBufBasedMessageHandleThread;
@@ -53,8 +54,8 @@ public class BaseServer implements IServer {
 	private ServerBootstrap bootstrap;
 	private ChannelFuture channelFuture;
 	// 服务器实例
-	private static BaseServer instance;
-	private static Object lock = new Object();
+	// private static BaseServer instance;
+	// private static Object lock = new Object();
 	// 服务器解析协议类型
 	private ChannelInitializerEnum protocolEnum;
 	// 消息处理线程
@@ -71,32 +72,37 @@ public class BaseServer implements IServer {
 	 *            解析协议类型
 	 * @return
 	 * @throws ServerException
+	 * @throws UnsupportedEncodingException
 	 */
-	public static BaseServer getInstance(ChannelInitializerEnum protocolEnum) throws ServerException {
-		if (instance == null) {
-			synchronized (lock) {
-				if (instance == null) {
-					instance = new BaseServer(protocolEnum);
-				}
-			}
-		}
-		return instance;
+	public static BaseServer getNewInstance(ChannelInitializerEnum protocolEnum) throws ServerException, UnsupportedEncodingException {
+		// if (instance == null) {
+		// synchronized (lock) {
+		// if (instance == null) {
+		// instance = new BaseServer(protocolEnum);
+		// }
+		// }
+		// }
+		// return instance;
+		return new BaseServer(protocolEnum);
 	}
 
-	public static BaseServer getInstance() throws ServerException {
-		if (instance == null) {
-			throw (new ServerException("please call getInstance(ChannelInitializerEnum) first,then you can user this method!"));
-		}
-		return instance;
-	}
+	//
+	// public static BaseServer getInstance() throws ServerException {
+	// if (instance == null) {
+	// throw (new
+	// ServerException("please call getInstance(ChannelInitializerEnum) first,then you can user this method!"));
+	// }
+	// return instance;
+	// }
 
 	/**
 	 * 初始化服务器
 	 * 
 	 * @param port
 	 * @throws ServerException
+	 * @throws UnsupportedEncodingException
 	 */
-	protected BaseServer(ChannelInitializerEnum enumeration) throws ServerException {
+	protected BaseServer(ChannelInitializerEnum enumeration) throws ServerException, UnsupportedEncodingException {
 		protocolEnum = enumeration;
 		initServerConfig();
 		acceptorGroup = new NioEventLoopGroup(GROUPSIZE);
@@ -105,13 +111,13 @@ public class BaseServer implements IServer {
 		bootstrap.channel(NioServerSocketChannel.class);
 		bootstrap.group(acceptorGroup, clientGroup);
 		if (enumeration.equals(ChannelInitializerEnum.STRING_CUSTOMED)) {
-			bootstrap.childHandler(new StringChannelInitializer());
+			bootstrap.childHandler(new StringChannelInitializer(this));
 		} else if (enumeration.equals(ChannelInitializerEnum.GOOGLE_PROTOCOL_BUFFER)) {
-			bootstrap.childHandler(new ProtoBufChannelInitializer());
+			bootstrap.childHandler(new ProtoBufChannelInitializer(this));
 		} else if (enumeration.equals(ChannelInitializerEnum.BYTE_CUSTOMED)) {
-			bootstrap.childHandler(new ByteChannelIntializer());
+			bootstrap.childHandler(new ByteChannelIntializer(this));
 		} else if (enumeration.equals(ChannelInitializerEnum.HTTP)) {
-			bootstrap.childHandler(new HttpChannelInitializer());
+			bootstrap.childHandler(new HttpChannelInitializer(this));
 		}
 	}
 
@@ -119,38 +125,51 @@ public class BaseServer implements IServer {
 	 * 初始化服务器配置信息
 	 * 
 	 * @throws ServerException
+	 * @throws UnsupportedEncodingException
 	 */
-	private void initServerConfig() throws ServerException {
+	private void initServerConfig() throws ServerException, UnsupportedEncodingException {
+		String ipreg = "^(1\\d{2}|2[0-4]\\d|25[0-5]|[1-9]\\d|[1-9])\\." + "(1\\d{2}|2[0-4]\\d|25[0-5]|[1-9]\\d|\\d)\\." + "(1\\d{2}|2[0-4]\\d|25[0-5]|[1-9]\\d|\\d)\\." + "(1\\d{2}|2[0-4]\\d|25[0-5]|[1-9]\\d|\\d)$";
+		SAXBuilder builder = new SAXBuilder();
+		Document document = null;
 		try {
-			SAXBuilder builder = new SAXBuilder();
 			InputStream file = new FileInputStream("./config/serverconfig.xml");
-			Document document = builder.build(file);
-			Element root = document.getRootElement();
-			List<Element> list = root.getChildren();
-			for (Element temp : list) {
-				String name = temp.getName();
-				if ("port".equalsIgnoreCase(name)) {
-					try {
-						int port = Integer.parseInt(temp.getValue());
-						this.serverConfig.setPort(port);
-					} catch (Exception e) {
-						throw new ServerException("port config error!");
-					}
-				} else if ("securityinfo".equalsIgnoreCase(name)) {
-					String sucurityStr = temp.getValue();
-					byte[] bytes = sucurityStr.getBytes("UTF-8");
-					this.serverConfig.setSecurityBytes(bytes);
-				} else if ("serverid".equalsIgnoreCase(name)) {
-					try {
-						int serverid = Integer.parseInt(temp.getValue());
-						this.serverConfig.setServerId(serverid);
-					} catch (Exception e) {
-						throw new ServerException("serverid error!");
-					}
-				}
-			}
+			document = builder.build(file);
 		} catch (Exception e) {
 			throw new ServerException("can not find ./config/serverconfig.xml");
+		}
+		Element root = document.getRootElement();
+		List<Element> list = root.getChildren();
+		for (Element temp : list) {
+			String name = temp.getName();
+			if ("port".equalsIgnoreCase(name)) {
+				try {
+					int port = Integer.parseInt(temp.getValue());
+					this.serverConfig.setPort(port);
+				} catch (Exception e) {
+					throw new ServerException("port config error!");
+				}
+			} else if ("securityinfo".equalsIgnoreCase(name)) {
+				String sucurityStr = temp.getValue();
+				byte[] bytes;
+				bytes = sucurityStr.getBytes("UTF-8");
+				this.serverConfig.setSecurityBytes(bytes);
+			} else if ("serverid".equalsIgnoreCase(name)) {
+				try {
+					int serverid = Integer.parseInt(temp.getValue());
+					this.serverConfig.setServerId(serverid);
+				} catch (Exception e) {
+					throw new ServerException("serverid error!");
+				}
+			} else if ("ip-allow".equalsIgnoreCase(name)) {
+				List<Element> children = temp.getChildren();
+				for (Element elt : children) {
+					String value = elt.getValue();
+					if (!value.matches(ipreg)) {
+						throw new ServerException("ip-allow not matches the reg!");
+					}
+					this.serverConfig.getIps().add(value);
+				}
+			}
 		}
 	}
 
@@ -184,9 +203,10 @@ public class BaseServer implements IServer {
 	 * @throws ServerException
 	 */
 	public HashSet<Channel> getSessions() throws ServerException {
-		if (instance == null) {
-			throw (new ServerException("please call getInstance(ChannelInitializerEnum) first"));
-		}
+		// if (instance == null) {
+		// throw (new
+		// ServerException("please call getInstance(ChannelInitializerEnum) first"));
+		// }
 		if (!isStart()) {
 			throw (new ServerException("please start server first"));
 		}
@@ -196,10 +216,10 @@ public class BaseServer implements IServer {
 	@Override
 	public void startServer() throws MessageException {
 		if (protocolEnum.equals(ChannelInitializerEnum.STRING_CUSTOMED)) {
-			((Thread) (handleThread = new StringBasedMessageHandleThread("StringMessageHandle"))).start();
+			((Thread) (handleThread = new StringBasedMessageHandleThread("StringMessageHandle", this))).start();
 		} else if (protocolEnum.equals(ChannelInitializerEnum.GOOGLE_PROTOCOL_BUFFER)) {
-			((Thread) (handleThread = new ProtoBufBasedMessageHandleThread("ProtoBufMessageHandle"))).start();
-			((Thread) (senderThread = new ProtoBufBasedMessageSenderThread("ProtoBufMessageSender"))).start();
+			((Thread) (handleThread = new ProtoBufBasedMessageHandleThread("ProtoBufMessageHandle", this))).start();
+			((Thread) (senderThread = new ProtoBufBasedMessageSenderThread("ProtoBufMessageSender", this))).start();
 			if (messageDictionary == null) {
 				throw new MessageException("messageDictionary is not set!please call setMessageDictionary first!");
 			}
@@ -284,12 +304,6 @@ public class BaseServer implements IServer {
 	}
 
 	public static void main(String[] args) {
-		try {
-			BaseServer.getInstance(ChannelInitializerEnum.HTTP).startServer();
-		} catch (MessageException e) {
-			e.printStackTrace();
-		} catch (ServerException e) {
-			e.printStackTrace();
-		}
+
 	}
 }

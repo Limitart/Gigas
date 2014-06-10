@@ -5,9 +5,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.gigas.core.exception.MessageException;
-import org.gigas.core.exception.ServerException;
 import org.gigas.core.server.BaseServer;
-import org.gigas.core.server.handler.IHandler;
+import org.gigas.core.server.handler.ihandler.IProtobufHandler;
 import org.gigas.core.server.message.ProtoBufPackage;
 import org.gigas.core.server.message.dictionary.ProtoBufDictionary;
 
@@ -21,9 +20,11 @@ public class ProtoBufBasedMessageHandleThread extends Thread implements IThread 
 	private static Logger log = LogManager.getLogger(ProtoBufBasedMessageHandleThread.class);
 	private LinkedBlockingQueue<ProtoBufPackage> handleQueue = new LinkedBlockingQueue<>();
 	private boolean stop = true;
+	private BaseServer server;
 
-	public ProtoBufBasedMessageHandleThread(String name) {
+	public ProtoBufBasedMessageHandleThread(String name, BaseServer server) {
 		this.setName(name);
+		this.server = server;
 	}
 
 	@Override
@@ -41,15 +42,14 @@ public class ProtoBufBasedMessageHandleThread extends Thread implements IThread 
 				}
 			} else {
 				try {
-					ProtoBufDictionary messageDictionary = BaseServer.getInstance().getMessageDictionary();
+					ProtoBufDictionary messageDictionary = server.getMessageDictionary();
 					if (messageDictionary != null) {
-						IHandler handler = messageDictionary.getHandler(poll.getId());
+						IProtobufHandler handler = messageDictionary.getHandler(poll.getId());
 						handler.setChannel(poll.getSrcChannel());
 						handler.setMessageId(poll.getId());
+						handler.setServer(server);
 						handler.handleMessage(poll.build());
 					}
-				} catch (ServerException e) {
-					log.error(e, e);
 				} catch (InstantiationException e) {
 					log.error(e, e);
 				} catch (IllegalAccessException e) {

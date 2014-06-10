@@ -11,7 +11,7 @@ import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.gigas.core.server.handler.IHttpHandler;
+import org.gigas.core.server.handler.ihandler.IHttpHandler;
 
 /**
  * Http消息处理

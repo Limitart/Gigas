@@ -18,9 +18,11 @@ public class StringBasedMessageHandleThread extends Thread implements IThread {
 	private static Logger log = LogManager.getLogger(StringBasedMessageHandleThread.class);
 	private LinkedBlockingQueue<String> handleQueue = new LinkedBlockingQueue<>();
 	private boolean stop = true;
+	private BaseServer server;
 
-	public StringBasedMessageHandleThread(String threadName) {
+	public StringBasedMessageHandleThread(String threadName, BaseServer server) {
 		this.setName(threadName);
+		this.server = server;
 	}
 
 	@Override
@@ -35,7 +37,7 @@ public class StringBasedMessageHandleThread extends Thread implements IThread {
 					}
 				} else {
 					log.debug("handle message->" + poll);
-					for (Channel temp : BaseServer.getInstance().getSessions()) {
+					for (Channel temp : server.getSessions()) {
 						temp.writeAndFlush(poll + "\r\n");
 					}
 				}

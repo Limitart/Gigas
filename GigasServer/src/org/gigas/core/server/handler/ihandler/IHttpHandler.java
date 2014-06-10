@@ -1,4 +1,4 @@
-package org.gigas.core.server.handler;
+package org.gigas.core.server.handler.ihandler;
 
 import io.netty.channel.Channel;
 

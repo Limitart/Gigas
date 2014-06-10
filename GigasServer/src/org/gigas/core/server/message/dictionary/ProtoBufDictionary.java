@@ -7,7 +7,7 @@ import java.util.HashMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.gigas.core.exception.MessageException;
-import org.gigas.core.server.handler.IHandler;
+import org.gigas.core.server.handler.ihandler.IProtobufHandler;
 import org.gigas.core.server.message.ProtoBufPackage;
 
 import com.google.protobuf.AbstractMessageLite.Builder;
@@ -22,7 +22,7 @@ import com.google.protobuf.MessageLite;
 public abstract class ProtoBufDictionary {
 	private static Logger log = LogManager.getLogger(ProtoBufDictionary.class);
 	private HashMap<Integer, ProtoBufPackage> id_messageMap = new HashMap<>();
-	private HashMap<Integer, Class<? extends IHandler>> id_handlerMap = new HashMap<>();
+	private HashMap<Integer, Class<? extends IProtobufHandler>> id_handlerMap = new HashMap<>();
 
 	/**
 	 * 获得消息类
@@ -65,7 +65,7 @@ public abstract class ProtoBufDictionary {
 	 * @throws InstantiationException
 	 * @throws IllegalAccessException
 	 */
-	public IHandler getHandler(final int id) throws MessageException, InstantiationException, IllegalAccessException {
+	public IProtobufHandler getHandler(final int id) throws MessageException, InstantiationException, IllegalAccessException {
 		if (!id_handlerMap.containsKey(id)) {
 			throw new MessageException("id:" + id + " handler not exist!");
 		}
@@ -79,7 +79,7 @@ public abstract class ProtoBufDictionary {
 	 * @param messageClass
 	 * @param handlerClass
 	 */
-	public void register(final int id, final Class<? extends MessageLite> messageLite, Class<? extends IHandler> handlerClass) {
+	public void register(final int id, final Class<? extends MessageLite> messageLite, Class<? extends IProtobufHandler> handlerClass) {
 		try {
 			putMessage(id, messageLite);
 			putHanlder(id, handlerClass);
@@ -126,7 +126,7 @@ public abstract class ProtoBufDictionary {
 	 * @param clazz
 	 * @throws MessageException
 	 */
-	private void putHanlder(final int id, final Class<? extends IHandler> clazz) throws MessageException {
+	private void putHanlder(final int id, final Class<? extends IProtobufHandler> clazz) throws MessageException {
 		if (id_handlerMap.containsKey(id)) {
 			throw new MessageException("id:" + id + " duplicate handler");
 		}

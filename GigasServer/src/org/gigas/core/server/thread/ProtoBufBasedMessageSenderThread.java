@@ -23,9 +23,11 @@ public class ProtoBufBasedMessageSenderThread extends Thread implements IThread 
 	private static Logger log = LogManager.getLogger(ProtoBufBasedMessageSenderThread.class);
 	private LinkedBlockingQueue<ProtoBufPackage> senderQueue = new LinkedBlockingQueue<>();
 	private boolean stop = true;
+	private BaseServer server;
 
-	public ProtoBufBasedMessageSenderThread(String name) {
+	public ProtoBufBasedMessageSenderThread(String name, BaseServer server) {
 		this.setName(name);
+		this.server = server;
 	}
 
 	@Override
@@ -51,7 +53,7 @@ public class ProtoBufBasedMessageSenderThread extends Thread implements IThread 
 						}
 						for (Channel channel : channelList) {
 							byte[] secirityBytes;
-							secirityBytes = BaseServer.getInstance().getServerConfig().getSecurityBytes();
+							secirityBytes = server.getServerConfig().getSecurityBytes();
 							byte[] byteArray = build.toByteArray();
 							ByteBuf buf = channel.alloc().directBuffer();
 							buf.writeBytes(byteArray);

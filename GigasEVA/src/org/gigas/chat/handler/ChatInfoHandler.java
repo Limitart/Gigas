@@ -7,12 +7,12 @@ import java.util.List;
 import org.gigas.chat.message.ChatInfoMessageBuilder;
 import org.gigas.chat.message.proto.ChatMessageFactory.ChatInfo;
 import org.gigas.chat.message.proto.ChatMessageFactory.RoleChatInfo;
-import org.gigas.core.server.handler.IHandler;
+import org.gigas.core.server.handler.ihandler.IProtobufHandler;
 import org.gigas.utils.ChannelUtil;
 
 import com.google.protobuf.MessageLite;
 
-public class ChatInfoHandler extends IHandler {
+public class ChatInfoHandler extends IProtobufHandler {
 
 	@Override
 	public void handleMessage(MessageLite message) {
@@ -39,7 +39,7 @@ public class ChatInfoHandler extends IHandler {
 		try {
 			// ChannelUtil.sendMessage_Protobuf(getChannel(),
 			// chatInfoMessageBuilder, false);
-			ChannelUtil.sendMessageToAll_Protobuf(chatInfoMessageBuilder, false);
+			ChannelUtil.sendMessageToAll_Protobuf(getServer(), chatInfoMessageBuilder, false);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

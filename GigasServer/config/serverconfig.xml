@@ -7,4 +7,8 @@
 	<securityinfo>gigassecurity</securityinfo>
 	<!--服务器编号-->
 	<serverid>1</serverid>
+	<ip-allow>
+		<ip>
+		</ip>
+	</ip-allow>
 </serverconfig>

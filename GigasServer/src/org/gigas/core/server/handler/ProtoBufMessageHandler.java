@@ -23,9 +23,13 @@ import com.google.protobuf.MessageLite;
  */
 @Sharable
 public class ProtoBufMessageHandler extends ChannelInboundHandlerAdapter {
-
+	private BaseServer server;
 	private static Logger log = LogManager.getLogger(ProtoBufMessageHandler.class);
 	private final static AttributeKey<ByteBuf> BUFFERKEY = AttributeKey.valueOf("BUFFERKEY");
+
+	public ProtoBufMessageHandler(BaseServer whichserver) {
+		this.server = whichserver;
+	}
 
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
 		// log.info("channelActive");
@@ -53,13 +57,13 @@ public class ProtoBufMessageHandler extends ChannelInboundHandlerAdapter {
 		buffer.release();
 		try {
 			int readableBytes = tempBuf.readableBytes();// 可读的字节数
-			if (readableBytes < BaseServer.getInstance().getServerConfig().getSecurityBytes().length) {// 包头的长度不够
+			if (readableBytes < server.getServerConfig().getSecurityBytes().length) {// 包头的长度不够
 				return;
 			}
-			byte[] sb = new byte[BaseServer.getInstance().getServerConfig().getSecurityBytes().length];
+			byte[] sb = new byte[server.getServerConfig().getSecurityBytes().length];
 			tempBuf.readBytes(sb);
 			for (int i = 0; i < sb.length; ++i) {
-				if (sb[i] != BaseServer.getInstance().getServerConfig().getSecurityBytes()[i]) {
+				if (sb[i] != server.getServerConfig().getSecurityBytes()[i]) {
 					log.error("security bytes error! disconneted!");
 					ctx.close();
 					return;
@@ -71,7 +75,8 @@ public class ProtoBufMessageHandler extends ChannelInboundHandlerAdapter {
 			tempBuf.markReaderIndex();// 标记当前readindex
 			int length = tempBuf.readInt();
 			int afterHeadLength = tempBuf.readableBytes();// 去除包头后的长度
-//			log.debug("nowLentgh->" + afterHeadLength + " needLentgh->" + length);
+			// log.debug("nowLentgh->" + afterHeadLength + " needLentgh->" +
+			// length);
 			if (afterHeadLength < length) {
 				tempBuf.resetReaderIndex();// 重置当前readindex
 				return;
@@ -79,10 +84,10 @@ public class ProtoBufMessageHandler extends ChannelInboundHandlerAdapter {
 			final int id = tempBuf.readInt();
 			ByteBuf body = ctx.alloc().directBuffer(length - Integer.SIZE / Byte.SIZE);
 			tempBuf.readBytes(body);
-			final MessageLite message = BaseServer.getInstance().getMessageDictionary().getMessage(id).build();
+			final MessageLite message = server.getMessageDictionary().getMessage(id).build();
 			if (message == null) {// 没有找到对应的消息类
 				log.error("id:" + id + " not exist!");
-//				ctx.close();
+				// ctx.close();
 				return;
 			}
 			ProtoBufCustomedDecoder protobufDecoder = new ProtoBufCustomedDecoder(message.getDefaultInstanceForType());
@@ -106,7 +111,7 @@ public class ProtoBufMessageHandler extends ChannelInboundHandlerAdapter {
 				}
 			};
 			protoBufPackage.setSrcChannel(ctx.channel());
-			BaseServer.getInstance().addHandleTask(protoBufPackage);
+			server.addHandleTask(protoBufPackage);
 			tempBuf.discardReadBytes();// 丢弃已读取字节
 		} catch (Exception e) {
 			log.error(e, e);
@@ -128,7 +133,7 @@ public class ProtoBufMessageHandler extends ChannelInboundHandlerAdapter {
 		log.info(ctx.channel().remoteAddress() + "connected!");
 		Attribute<ByteBuf> attr = ctx.attr(BUFFERKEY);
 		attr.set(ctx.alloc().directBuffer());
-		BaseServer.getInstance().registerChannel(ctx.channel());
+		server.registerChannel(ctx.channel());
 	}
 
 	/**
@@ -139,7 +144,7 @@ public class ProtoBufMessageHandler extends ChannelInboundHandlerAdapter {
 		Attribute<ByteBuf> attr = ctx.attr(BUFFERKEY);
 		ByteBuf byteBuf = attr.getAndRemove();
 		byteBuf.release();
-		BaseServer.getInstance().unregisterChannel(ctx.channel());
+		server.unregisterChannel(ctx.channel());
 	}
 
 	public void channelWritabilityChanged(ChannelHandlerContext ctx) throws Exception {

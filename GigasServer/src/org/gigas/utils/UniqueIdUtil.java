@@ -34,9 +34,9 @@ public class UniqueIdUtil {
 	 * @return
 	 * @throws ServerException
 	 */
-	public static long getUid() throws ServerException {
+	public static long getUid(BaseServer server) throws ServerException {
 		synchronized (Uid) {
-			return LongIdGenerator.getId();
+			return LongIdGenerator.getId(server);
 		}
 	}
 }
@@ -145,8 +145,8 @@ abstract class AbstractUUIDGenerator {
 class LongIdGenerator {
 	private static int count = 0;
 
-	public static long getId() throws ServerException {
+	public static long getId(BaseServer server) throws ServerException {
 		++count;
-		return (((long) (BaseServer.getInstance().getServerConfig().getServerId() & 0xFFFF)) << 48) | (((System.currentTimeMillis() / 1000) & 0x00000000FFFFFFFFl) << 16) | (count & 0x0000FFFF);
+		return (((long) (server.getServerConfig().getServerId() & 0xFFFF)) << 48) | (((System.currentTimeMillis() / 1000) & 0x00000000FFFFFFFFl) << 16) | (count & 0x0000FFFF);
 	}
 }

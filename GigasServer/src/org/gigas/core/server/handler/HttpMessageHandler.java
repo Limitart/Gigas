@@ -6,7 +6,9 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.DefaultHttpRequest;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.QueryStringDecoder;
+import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder;
 
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
 
@@ -22,8 +24,12 @@ import org.gigas.core.server.BaseServer;
  */
 @Sharable
 public class HttpMessageHandler extends ChannelInboundHandlerAdapter {
-
+	private BaseServer server;
 	private static Logger log = LogManager.getLogger(HttpMessageHandler.class);
+
+	public HttpMessageHandler(BaseServer whichserver) {
+		this.server = whichserver;
+	}
 
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
 		// log.info("channelActive");
@@ -43,12 +49,14 @@ public class HttpMessageHandler extends ChannelInboundHandlerAdapter {
 			return;
 		DefaultHttpRequest request = (DefaultHttpRequest) msg;
 		if (request.getMethod().equals(HttpMethod.GET)) {// GET方式传输
-			QueryStringDecoder decoder = new QueryStringDecoder(request.getUri());
+			QueryStringDecoder decoder = new QueryStringDecoder(request.getUri(), Charset.forName("UTF-8"));
 			Map<String, List<String>> parameters = decoder.parameters();
 			if (parameters != null && !parameters.isEmpty()) {
-				BaseServer.getInstance().getHttpHandler().doHttp(ctx.channel(), parameters);
+				server.getHttpHandler().doHttp(ctx.channel(), parameters);
 			}
 		} else if (request.getMethod().equals(HttpMethod.POST)) {// POST方式传输
+			HttpPostRequestDecoder httpPostRequestDecoder = new HttpPostRequestDecoder(request);
+			// TODO POST
 		}
 		ctx.close();
 	}
@@ -65,6 +73,7 @@ public class HttpMessageHandler extends ChannelInboundHandlerAdapter {
 	 */
 	public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
 		// log.info(ctx.channel().remoteAddress() + "connected!");
+		// TODO IP-ALLOW
 	}
 
 	/**

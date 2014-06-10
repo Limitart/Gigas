@@ -35,7 +35,7 @@ public class ChannelUtil {
 	 *            立即发送(或加入缓存)
 	 * @throws ServerException
 	 */
-	public static void sendMessage_Protobuf(Channel channel, ProtoBufPackage message, boolean immediately) throws ServerException {
+	public static void sendMessage_Protobuf(BaseServer whichserver, Channel channel, ProtoBufPackage message, boolean immediately) throws ServerException {
 		if (message == null) {
 			throw new NullPointerException("message is null!");
 		}
@@ -45,7 +45,7 @@ public class ChannelUtil {
 		}
 		if (immediately) {
 			byte[] secirityBytes;
-			secirityBytes = BaseServer.getInstance().getServerConfig().getSecurityBytes();
+			secirityBytes = whichserver.getServerConfig().getSecurityBytes();
 			byte[] byteArray = msg.toByteArray();
 			ByteBuf buf = channel.alloc().directBuffer();
 			buf.writeBytes(byteArray);
@@ -58,7 +58,7 @@ public class ChannelUtil {
 			buf.release();
 		} else {
 			message.addSendChannel(channel);
-			BaseServer.getInstance().addSenderTask(message);
+			whichserver.addSenderTask(message);
 		}
 	}
 
@@ -69,7 +69,7 @@ public class ChannelUtil {
 	 * @param immediately
 	 *            是否立即(或加入缓存)
 	 */
-	public static void sendMessageToAll_Protobuf(ProtoBufPackage message, boolean immediately) {
+	public static void sendMessageToAll_Protobuf(BaseServer whichserver, ProtoBufPackage message, boolean immediately) {
 		if (message == null) {
 			throw new NullPointerException("message is null!");
 		}
@@ -78,7 +78,7 @@ public class ChannelUtil {
 			throw new NullPointerException("can not build a message,please override method:build()!");
 		}
 		try {
-			sendMessageToSome_Protobuf(new LinkedList<Channel>(BaseServer.getInstance().getSessions()), message, immediately);
+			sendMessageToSome_Protobuf(whichserver, new LinkedList<Channel>(whichserver.getSessions()), message, immediately);
 		} catch (ServerException e) {
 			log.error(e, e);
 		}
@@ -92,7 +92,7 @@ public class ChannelUtil {
 	 * @param immediately
 	 *            是否立即(或加入缓存)
 	 */
-	public static void sendMessageToSome_Protobuf(List<Channel> channels, ProtoBufPackage message, boolean immediately) {
+	public static void sendMessageToSome_Protobuf(BaseServer whichserver, List<Channel> channels, ProtoBufPackage message, boolean immediately) {
 		if (message == null) {
 			throw new NullPointerException("message is null!");
 		}
@@ -104,7 +104,7 @@ public class ChannelUtil {
 			if (immediately) {
 				for (Channel channel : channels) {
 					byte[] secirityBytes;
-					secirityBytes = BaseServer.getInstance().getServerConfig().getSecurityBytes();
+					secirityBytes = whichserver.getServerConfig().getSecurityBytes();
 					byte[] byteArray = msg.toByteArray();
 					ByteBuf buf = channel.alloc().directBuffer();
 					buf.writeBytes(byteArray);
@@ -118,7 +118,7 @@ public class ChannelUtil {
 				}
 			} else {
 				message.addSendChannelAll(channels);
-				BaseServer.getInstance().addSenderTask(message);
+				whichserver.addSenderTask(message);
 			}
 		} catch (Exception e) {
 			log.error(e, e);
