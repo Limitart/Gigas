@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xml>
 <protos package="org.gigas.chat" id="100" module="Chat">
 	<message id="1" name="ChatInfo" type="req" annotation="聊天消息">
 		<field type="String" name="content" annotation="聊天内容"/>

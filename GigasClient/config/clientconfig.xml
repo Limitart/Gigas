@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xml>
 <clientconfig>
 	<ip>192.168.5.72</ip>
 	<!--端口-->
