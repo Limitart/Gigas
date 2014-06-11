@@ -27,7 +27,10 @@ public class HttpRequestHandler implements IHttpHandler {
 		ByteBuf buffer = session.alloc().directBuffer();
 		DefaultFullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, buffer);
 		try {
-			buffer.writeBytes(("yeah you suceess!!!!" + " your value:" + request.get("x").get(0)).getBytes("UTF-8"));
+			for (List<String> temp : request.values()) {
+				String string = temp.get(0);
+				buffer.writeBytes((("yeah you suceess!!!!" + " your value:" + string).getBytes("UTF-8")));
+			}
 		} catch (Exception e) {
 			log.error(e, e);
 		} finally {

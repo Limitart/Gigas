@@ -1,14 +1,20 @@
 package org.gigas.core.server.handler;
 
-import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.DefaultHttpRequest;
+import io.netty.handler.codec.http.HttpContent;
 import io.netty.handler.codec.http.HttpMethod;
+import io.netty.handler.codec.http.HttpObject;
 import io.netty.handler.codec.http.QueryStringDecoder;
+import io.netty.handler.codec.http.multipart.DefaultHttpDataFactory;
 import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder;
+import io.netty.handler.codec.http.multipart.InterfaceHttpData;
+import io.netty.handler.codec.http.multipart.MixedAttribute;
+import io.netty.util.CharsetUtil;
 
-import java.nio.charset.Charset;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -22,10 +28,12 @@ import org.gigas.core.server.BaseServer;
  * @author hank
  * 
  */
-@Sharable
-public class HttpMessageHandler extends ChannelInboundHandlerAdapter {
+
+public class HttpMessageHandler extends SimpleChannelInboundHandler<HttpObject> {
 	private BaseServer server;
 	private static Logger log = LogManager.getLogger(HttpMessageHandler.class);
+	HttpPostRequestDecoder multipartDecoder;
+	private DefaultHttpRequest request;
 
 	public HttpMessageHandler(BaseServer whichserver) {
 		this.server = whichserver;
@@ -36,29 +44,6 @@ public class HttpMessageHandler extends ChannelInboundHandlerAdapter {
 	}
 
 	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-		// log.info("channelInactive");
-	}
-
-	/**
-	 * 读取消息
-	 */
-	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-		if (!ctx.channel().isActive())
-			return;
-		if (!(msg instanceof DefaultHttpRequest))
-			return;
-		DefaultHttpRequest request = (DefaultHttpRequest) msg;
-		if (request.getMethod().equals(HttpMethod.GET)) {// GET方式传输
-			QueryStringDecoder decoder = new QueryStringDecoder(request.getUri(), Charset.forName("UTF-8"));
-			Map<String, List<String>> parameters = decoder.parameters();
-			if (parameters != null && !parameters.isEmpty()) {
-				server.getHttpHandler().doHttp(ctx.channel(), parameters);
-			}
-		} else if (request.getMethod().equals(HttpMethod.POST)) {// POST方式传输
-			HttpPostRequestDecoder httpPostRequestDecoder = new HttpPostRequestDecoder(request);
-			// TODO POST
-		}
-		ctx.close();
 	}
 
 	/**
@@ -91,10 +76,60 @@ public class HttpMessageHandler extends ChannelInboundHandlerAdapter {
 	 * 捕获到异常
 	 */
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-		// log.error(cause, cause);
+		log.error(cause, cause);
 	}
 
 	public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
 		log.info("userEventTriggered");
+	}
+
+	@Override
+	protected void channelRead0(ChannelHandlerContext ctx, HttpObject msg) throws Exception {
+		if (msg instanceof DefaultHttpRequest) {
+			request = (DefaultHttpRequest) msg;
+		}
+		if (request != null && request.getMethod().equals(HttpMethod.GET)) {// GET方式传输
+			if (!ctx.channel().isActive()) {
+				return;
+			}
+			QueryStringDecoder decoder = new QueryStringDecoder(request.getUri(), CharsetUtil.UTF_8);
+			Map<String, List<String>> parameters = decoder.parameters();
+			if (parameters != null && !parameters.isEmpty()) {
+				server.getHttpHandler().doHttp(ctx.channel(), parameters);
+				request = null;
+			}
+			ctx.close();
+		} else if (request != null && (request.getMethod().equals(HttpMethod.POST) || request.getMethod().equals(HttpMethod.PUT))) {// POST方式传输
+			if (multipartDecoder == null) {
+				multipartDecoder = new HttpPostRequestDecoder(new DefaultHttpDataFactory(DefaultHttpDataFactory.MINSIZE), request, CharsetUtil.UTF_8);
+			}
+			if (multipartDecoder != null && (msg instanceof HttpContent)) {
+				multipartDecoder.offer((HttpContent) msg);
+				Map<String, List<String>> params = new HashMap<String, List<String>>();
+				List<InterfaceHttpData> bodyHttpDatas = multipartDecoder.getBodyHttpDatas();
+				for (InterfaceHttpData data : bodyHttpDatas) {
+					String value = null;
+					if (InterfaceHttpData.HttpDataType.Attribute == data.getHttpDataType()) {
+						MixedAttribute attribute = (MixedAttribute) data;
+						attribute.setCharset(CharsetUtil.UTF_8);
+						value = attribute.getValue();
+						LinkedList<String> linkedList = new LinkedList<String>();
+						linkedList.add(value);
+						params.put(attribute.getName(), linkedList);
+					} else if (InterfaceHttpData.HttpDataType.FileUpload == data.getHttpDataType()) {
+						// FileUpload fileUpload = (FileUpload) data;
+						// fileUpload.getFile();
+					} else if (InterfaceHttpData.HttpDataType.InternalAttribute == data.getHttpDataType()) {
+
+					}
+				}
+				server.getHttpHandler().doHttp(ctx.channel(), params);
+				multipartDecoder.cleanFiles();
+				multipartDecoder.destroy();
+				multipartDecoder = null;
+				request = null;
+				ctx.close();
+			}
+		}
 	}
 }

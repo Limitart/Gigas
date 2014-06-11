@@ -3,6 +3,7 @@ package org.gigas.core.server.channelInitializer;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
+import io.netty.handler.codec.http.HttpContentCompressor;
 import io.netty.handler.codec.http.HttpRequestDecoder;
 import io.netty.handler.codec.http.HttpResponseEncoder;
 import io.netty.handler.ssl.SslHandler;
@@ -29,11 +30,15 @@ public class HttpChannelInitializer extends ChannelInitializer<Channel> {
 	@Override
 	protected void initChannel(Channel channel) throws Exception {
 		ChannelPipeline pipeline = channel.pipeline();
+
+		if (server.isSSL()) {
+			SSLEngine engine = SSLContext.getDefault().createSSLEngine();
+			engine.setUseClientMode(false);
+			pipeline.addLast("ssl", new SslHandler(engine));
+		}
 		pipeline.addLast("decoder", new HttpRequestDecoder());
 		pipeline.addLast("encoder", new HttpResponseEncoder());
-		SSLEngine engine = SSLContext.getDefault().createSSLEngine();
-		engine.setUseClientMode(false);
-		pipeline.addLast("ssl", new SslHandler(engine));
+		pipeline.addLast("deflater", new HttpContentCompressor());
 		pipeline.addLast("handler", new HttpMessageHandler(server));
 
 	}

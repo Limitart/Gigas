@@ -64,6 +64,8 @@ public class BaseServer implements IServer {
 	private IThread senderThread;
 	// Http服务器Handler
 	private IHttpHandler httpHandler;
+	// 是否是ssl
+	private boolean isSSL = false;
 
 	/**
 	 * 得到服务器实例
@@ -301,6 +303,14 @@ public class BaseServer implements IServer {
 
 	public IHttpHandler getHttpHandler() {
 		return httpHandler;
+	}
+
+	public boolean isSSL() {
+		return isSSL;
+	}
+
+	public void setSSL(boolean isSSL) {
+		this.isSSL = isSSL;
 	}
 
 	public static void main(String[] args) {
