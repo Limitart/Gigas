@@ -32,7 +32,7 @@ import org.gigas.core.server.BaseServer;
 public class HttpMessageHandler extends SimpleChannelInboundHandler<HttpObject> {
 	private BaseServer server;
 	private static Logger log = LogManager.getLogger(HttpMessageHandler.class);
-	HttpPostRequestDecoder multipartDecoder;
+	private HttpPostRequestDecoder multipartDecoder;
 	private DefaultHttpRequest request;
 
 	public HttpMessageHandler(BaseServer whichserver) {
@@ -86,7 +86,7 @@ public class HttpMessageHandler extends SimpleChannelInboundHandler<HttpObject> 
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, HttpObject msg) throws Exception {
 		if (msg instanceof DefaultHttpRequest) {
-			request = (DefaultHttpRequest) msg;
+			request = (DefaultHttpRequest) msg;//如果是DefaultHttpRequest实例
 		}
 		if (request != null && request.getMethod().equals(HttpMethod.GET)) {// GET方式传输
 			if (!ctx.channel().isActive()) {
@@ -103,16 +103,15 @@ public class HttpMessageHandler extends SimpleChannelInboundHandler<HttpObject> 
 			if (multipartDecoder == null) {
 				multipartDecoder = new HttpPostRequestDecoder(new DefaultHttpDataFactory(DefaultHttpDataFactory.MINSIZE), request, CharsetUtil.UTF_8);
 			}
-			if (multipartDecoder != null && (msg instanceof HttpContent)) {
+			if (multipartDecoder != null && (msg instanceof HttpContent)) {//如果传过来的是内容信息，则offer进decoder解析
 				multipartDecoder.offer((HttpContent) msg);
 				Map<String, List<String>> params = new HashMap<String, List<String>>();
 				List<InterfaceHttpData> bodyHttpDatas = multipartDecoder.getBodyHttpDatas();
-				for (InterfaceHttpData data : bodyHttpDatas) {
-					String value = null;
+				for (InterfaceHttpData data : bodyHttpDatas) {//遍历内容
 					if (InterfaceHttpData.HttpDataType.Attribute == data.getHttpDataType()) {
 						MixedAttribute attribute = (MixedAttribute) data;
 						attribute.setCharset(CharsetUtil.UTF_8);
-						value = attribute.getValue();
+						String value = attribute.getValue();
 						LinkedList<String> linkedList = new LinkedList<String>();
 						linkedList.add(value);
 						params.put(attribute.getName(), linkedList);
@@ -124,7 +123,7 @@ public class HttpMessageHandler extends SimpleChannelInboundHandler<HttpObject> 
 					}
 				}
 				server.getHttpHandler().doHttp(ctx.channel(), params);
-				multipartDecoder.cleanFiles();
+//				multipartDecoder.cleanFiles();
 				multipartDecoder.destroy();
 				multipartDecoder = null;
 				request = null;
