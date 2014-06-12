@@ -10,7 +10,7 @@ import org.gigas.core.server.ProtoBufBasedServer;
 public class ServerMain {
 
 	public static void main(String[] args) {
-		startServer(new ProtoBufBasedServer());
+		startServer(new ProtoBufBasedServer(8888));
 	}
 
 	private static void startServer(IServer server) {
