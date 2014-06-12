@@ -51,10 +51,9 @@ public class StringBasedServer implements IServer {
 			}
 		});
 		try {
-			log.info("before bind");
+			log.info("waiting for connection......");
 			ChannelFuture cf = bootstrap.bind(serverConfig.getPort()).sync();
 			cf.channel().closeFuture().sync();
-			log.info("after bind");
 		} catch (InterruptedException e) {
 			log.error(e, e);
 		} finally {
@@ -67,6 +66,6 @@ public class StringBasedServer implements IServer {
 	}
 
 	public static void main(String[] args) {
-		new StringBasedServer(8000).initServer();
+		new StringBasedServer(8888).initServer();
 	}
 }

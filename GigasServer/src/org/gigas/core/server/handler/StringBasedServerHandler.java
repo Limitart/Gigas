@@ -14,6 +14,7 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
  * 
  */
 public class StringBasedServerHandler extends ChannelInboundHandlerAdapter {
+	
 	private static Logger log = LogManager.getLogger(StringBasedServerHandler.class);
 
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
@@ -24,6 +25,9 @@ public class StringBasedServerHandler extends ChannelInboundHandlerAdapter {
 		log.info("channelInactive");
 	}
 
+	/**
+	 * 读取消息
+	 */
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 		log.info(msg);
 		ByteBuf result = (ByteBuf) msg;
@@ -35,10 +39,14 @@ public class StringBasedServerHandler extends ChannelInboundHandlerAdapter {
 		byte[] bytes = new byte[result.readableBytes()];
 		result.readBytes(bytes);
 		String str = new String(bytes);
+		ctx.write(str);
 		log.info("received->" + str);
 		result.release();
 	}
 
+	/**
+	 * 消息读取完毕
+	 */
 	public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
 		log.info("channelReadComplete");
 		ctx.flush();
@@ -51,6 +59,9 @@ public class StringBasedServerHandler extends ChannelInboundHandlerAdapter {
 		log.info(ctx.channel().remoteAddress() + "connected!");
 	}
 
+	/**
+	 * 用户断开连接
+	 */
 	public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
 		log.info(ctx.channel().remoteAddress() + "disconnected!");
 	}
@@ -59,6 +70,9 @@ public class StringBasedServerHandler extends ChannelInboundHandlerAdapter {
 		log.info("channelWritabilityChanged");
 	}
 
+	/**
+	 * 捕获到异常
+	 */
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
 		log.error(cause, cause);
 	}
