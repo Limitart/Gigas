@@ -1,6 +1,8 @@
-package org.gigas.core.client.handler;
+package org.gigas.core.client.handler.ihandler;
 
 import io.netty.channel.Channel;
+
+import org.gigas.core.client.BaseClient;
 
 import com.google.protobuf.MessageLite;
 
@@ -10,9 +12,10 @@ import com.google.protobuf.MessageLite;
  * @author hank
  * 
  */
-public abstract class IHandler {
+public abstract class IProtobufHandler {
 	private Channel channel;
 	private long messageId;
+	private BaseClient client;
 
 	public abstract void handleMessage(MessageLite message);
 
@@ -30,6 +33,14 @@ public abstract class IHandler {
 
 	public void setMessageId(long messageId) {
 		this.messageId = messageId;
+	}
+
+	public BaseClient getClient() {
+		return client;
+	}
+
+	public void setClient(BaseClient client) {
+		this.client = client;
 	}
 
 }

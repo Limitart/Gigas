@@ -11,7 +11,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.gigas.core.client.BaseClient;
 import org.gigas.core.client.codec.ProtoBufCustomedDecoder;
-import org.gigas.core.client.message.ProtoBufPackage;
+import org.gigas.core.client.message.ProtoBufMessage;
+import org.gigas.core.client.message.dictionary.ProtoBufDictionary;
 
 import com.google.protobuf.MessageLite;
 
@@ -23,9 +24,13 @@ import com.google.protobuf.MessageLite;
  */
 @Sharable
 public class ProtoBufMessageHandler extends ChannelInboundHandlerAdapter {
-
+	private BaseClient client;
 	private static Logger log = LogManager.getLogger(ProtoBufMessageHandler.class);
 	private final static AttributeKey<ByteBuf> BUFFERKEY = AttributeKey.valueOf("BUFFERKEY");
+
+	public ProtoBufMessageHandler(BaseClient client) {
+		this.client = client;
+	}
 
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
 		// log.info("channelActive");
@@ -53,16 +58,18 @@ public class ProtoBufMessageHandler extends ChannelInboundHandlerAdapter {
 		buffer.release();
 		try {
 			int readableBytes = tempBuf.readableBytes();// 可读的字节数
-			if (readableBytes < BaseClient.getInstance().getClientConfig().getSecurityBytes().length) {// 包头的长度不够
-				return;
-			}
-			byte[] sb = new byte[BaseClient.getInstance().getClientConfig().getSecurityBytes().length];
-			tempBuf.readBytes(sb);
-			for (int i = 0; i < sb.length; ++i) {
-				if (sb[i] != BaseClient.getInstance().getClientConfig().getSecurityBytes()[i]) {
-					log.error("security bytes error! disconneted!");
-					ctx.close();
+			if (client.getClientConfig().getSecurityBytes() != null) {
+				if (readableBytes < client.getClientConfig().getSecurityBytes().length) {// 包头的长度不够
 					return;
+				}
+				byte[] sb = new byte[client.getClientConfig().getSecurityBytes().length];
+				tempBuf.readBytes(sb);
+				for (int i = 0; i < sb.length; ++i) {
+					if (sb[i] != client.getClientConfig().getSecurityBytes()[i]) {
+						log.error("security bytes error! disconneted!");
+						ctx.close();
+						return;
+					}
 				}
 			}
 			if (readableBytes < Integer.SIZE / Byte.SIZE) {// 包头的长度不够
@@ -80,16 +87,16 @@ public class ProtoBufMessageHandler extends ChannelInboundHandlerAdapter {
 			final int id = tempBuf.readInt();
 			ByteBuf body = ctx.alloc().directBuffer(length - Integer.SIZE / Byte.SIZE);
 			tempBuf.readBytes(body);
-			final MessageLite message = BaseClient.getInstance().getMessageDictionary().getMessage(id).build();
+			final MessageLite message = ((ProtoBufDictionary) client.getMessageDictionary()).getMessage(id).build();
 			if (message == null) {// 没有找到对应的消息类
 				log.error("id:" + id + " not exist!");
-				ctx.close();
+				// ctx.close();
 				return;
 			}
 			ProtoBufCustomedDecoder protobufDecoder = new ProtoBufCustomedDecoder(message.getDefaultInstanceForType());
 			final MessageLite excuteDecode = protobufDecoder.excuteDecode(id, ctx, body);// 执行解码
 			// 得到的消息派发
-			ProtoBufPackage protoBufPackage = new ProtoBufPackage() {
+			ProtoBufMessage protoBufPackage = new ProtoBufMessage() {
 
 				@Override
 				public int getId() {
@@ -107,7 +114,7 @@ public class ProtoBufMessageHandler extends ChannelInboundHandlerAdapter {
 				}
 			};
 			protoBufPackage.setSrcChannel(ctx.channel());
-			BaseClient.getInstance().addHandleTask(protoBufPackage);
+			client.addHandleTask(protoBufPackage);
 			tempBuf.discardReadBytes();// 丢弃已读取字节
 		} catch (Exception e) {
 			log.error(e, e);
@@ -126,20 +133,21 @@ public class ProtoBufMessageHandler extends ChannelInboundHandlerAdapter {
 	 * 用户连接进来了
 	 */
 	public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
-		log.info("connected to server->" + ctx.channel().remoteAddress());
+		log.info(ctx.channel().remoteAddress() + "connected!");
 		Attribute<ByteBuf> attr = ctx.attr(BUFFERKEY);
 		attr.set(ctx.alloc().directBuffer());
-		BaseClient.getInstance().setSession(ctx.channel());
+		client.setSession(ctx.channel());
 	}
 
 	/**
 	 * 用户断开连接
 	 */
 	public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
-		log.info("disconnected from server->" + ctx.channel().remoteAddress());
+		log.info(ctx.channel().remoteAddress() + "disconnected!");
 		Attribute<ByteBuf> attr = ctx.attr(BUFFERKEY);
 		ByteBuf byteBuf = attr.getAndRemove();
 		byteBuf.release();
+		client.setSession(null);
 	}
 
 	public void channelWritabilityChanged(ChannelHandlerContext ctx) throws Exception {

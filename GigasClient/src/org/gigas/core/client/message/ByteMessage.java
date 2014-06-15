@@ -1,4 +1,4 @@
-package org.gigas.core.server.message;
+package org.gigas.core.client.message;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
@@ -8,7 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.gigas.core.server.message.abstractmessage.IMessage;
+import org.gigas.core.client.message.abstractmessage.IMessage;
 
 /**
  * byte消息虚拟类

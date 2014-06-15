@@ -1,15 +1,15 @@
-package org.gigas.core.server.thread;
+package org.gigas.core.client.thread;
 
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.gigas.core.client.BaseClient;
+import org.gigas.core.client.handler.ihandler.IByteMessageHandler;
+import org.gigas.core.client.message.ByteMessage;
+import org.gigas.core.client.message.dictionary.ByteMessageDictionary;
+import org.gigas.core.client.thread.ithread.IThread;
 import org.gigas.core.exception.MessageException;
-import org.gigas.core.server.BaseServer;
-import org.gigas.core.server.handler.ihandler.IByteMessageHandler;
-import org.gigas.core.server.message.ByteMessage;
-import org.gigas.core.server.message.dictionary.ByteMessageDictionary;
-import org.gigas.core.server.thread.ithread.IThread;
 
 /**
  * ByteMessage消息处理线程
@@ -21,11 +21,11 @@ public class ByteMessageBasedMessageHandleThread extends Thread implements IThre
 	private static Logger log = LogManager.getLogger(ByteMessageBasedMessageHandleThread.class);
 	private LinkedBlockingQueue<ByteMessage> handleQueue = new LinkedBlockingQueue<>();
 	private boolean stop = true;
-	private BaseServer server;
+	private BaseClient client;
 
-	public ByteMessageBasedMessageHandleThread(String name, BaseServer server) {
+	public ByteMessageBasedMessageHandleThread(String name, BaseClient client) {
 		this.setName(name);
-		this.server = server;
+		this.client = client;
 	}
 
 	@Override
@@ -43,7 +43,7 @@ public class ByteMessageBasedMessageHandleThread extends Thread implements IThre
 				}
 			} else {
 				try {
-					ByteMessageDictionary messageDictionary = (ByteMessageDictionary) server.getMessageDictionary();
+					ByteMessageDictionary messageDictionary = (ByteMessageDictionary) client.getMessageDictionary();
 					if (messageDictionary != null) {
 						IByteMessageHandler handler = messageDictionary.getHandler(poll.getId());
 						handler.handleMessage(poll);

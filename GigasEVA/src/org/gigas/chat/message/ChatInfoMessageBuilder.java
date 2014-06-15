@@ -7,11 +7,11 @@ import java.util.List;
 import org.gigas.chat.message.proto.ChatMessageFactory;
 import org.gigas.chat.message.proto.ChatMessageFactory.ChatInfo.Builder;
 import org.gigas.chat.message.proto.ChatMessageFactory.RoleChatInfo;
-import org.gigas.core.server.message.ProtoBufPackage;
+import org.gigas.core.server.message.ProtoBufMessage;
 
 import com.google.protobuf.MessageLite;
 
-public class ChatInfoMessageBuilder extends ProtoBufPackage {
+public class ChatInfoMessageBuilder extends ProtoBufMessage {
 
 	private String content;// 聊天内容
 

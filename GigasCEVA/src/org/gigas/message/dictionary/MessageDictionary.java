@@ -1,8 +1,11 @@
 package org.gigas.message.dictionary;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.gigas.chat.handler.ChatInfoHandler;
 import org.gigas.chat.message.proto.ChatMessageFactory.ChatInfo;
 import org.gigas.core.client.message.dictionary.ProtoBufDictionary;
+import org.gigas.core.exception.MessageException;
 
 /**
  * 消息字典
@@ -11,10 +14,15 @@ import org.gigas.core.client.message.dictionary.ProtoBufDictionary;
  * 
  */
 public class MessageDictionary extends ProtoBufDictionary {
+	private static Logger log = LogManager.getLogger(MessageDictionary.class);
 
 	@Override
 	public void registerAllMessage() {
-		register(1001, ChatInfo.class, ChatInfoHandler.class);
+		try {
+			register_proto(1001, ChatInfo.class, ChatInfoHandler.class);
+		} catch (MessageException e) {
+			log.error(e, e);
+		}
 	}
 
 }

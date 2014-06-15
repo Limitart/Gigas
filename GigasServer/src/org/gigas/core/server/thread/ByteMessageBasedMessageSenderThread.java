@@ -9,6 +9,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.gigas.core.server.BaseServer;
 import org.gigas.core.server.message.ByteMessage;
+import org.gigas.core.server.thread.ithread.IThread;
 import org.gigas.utils.ChannelUtil;
 
 /**

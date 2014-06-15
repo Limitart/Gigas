@@ -1,4 +1,4 @@
-package org.gigas.core.server.message.dictionary;
+package org.gigas.core.server.message.dictionary.idictionary;
 
 import org.gigas.core.exception.MessageException;
 

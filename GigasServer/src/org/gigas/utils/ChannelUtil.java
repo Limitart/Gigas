@@ -11,7 +11,7 @@ import org.apache.logging.log4j.Logger;
 import org.gigas.core.exception.ServerException;
 import org.gigas.core.server.BaseServer;
 import org.gigas.core.server.message.ByteMessage;
-import org.gigas.core.server.message.ProtoBufPackage;
+import org.gigas.core.server.message.ProtoBufMessage;
 
 import com.google.protobuf.MessageLite;
 
@@ -142,7 +142,7 @@ public class ChannelUtil {
 	 * @param channel
 	 * @param message
 	 */
-	public static void sendMessage_Protobuf_immediately(BaseServer whichserver, Channel channel, ProtoBufPackage message) {
+	public static void sendMessage_Protobuf_immediately(BaseServer whichserver, Channel channel, ProtoBufMessage message) {
 		if (message == null) {
 			throw new NullPointerException("message is null!");
 		}
@@ -177,7 +177,7 @@ public class ChannelUtil {
 	 *            立即发送(或加入缓存)
 	 * @throws ServerException
 	 */
-	public static void sendMessage_Protobuf(BaseServer whichserver, Channel channel, ProtoBufPackage message, boolean immediately) throws ServerException {
+	public static void sendMessage_Protobuf(BaseServer whichserver, Channel channel, ProtoBufMessage message, boolean immediately) throws ServerException {
 
 		if (immediately) {
 			sendMessage_Protobuf_immediately(whichserver, channel, message);
@@ -194,7 +194,7 @@ public class ChannelUtil {
 	 * @param immediately
 	 *            是否立即(或加入缓存)
 	 */
-	public static void sendMessageToAll_Protobuf(BaseServer whichserver, ProtoBufPackage message, boolean immediately) {
+	public static void sendMessageToAll_Protobuf(BaseServer whichserver, ProtoBufMessage message, boolean immediately) {
 		if (message == null) {
 			throw new NullPointerException("message is null!");
 		}
@@ -217,7 +217,7 @@ public class ChannelUtil {
 	 * @param immediately
 	 *            是否立即(或加入缓存)
 	 */
-	public static void sendMessageToSome_Protobuf(BaseServer whichserver, List<Channel> channels, ProtoBufPackage message, boolean immediately) {
+	public static void sendMessageToSome_Protobuf(BaseServer whichserver, List<Channel> channels, ProtoBufMessage message, boolean immediately) {
 		if (message == null) {
 			throw new NullPointerException("message is null!");
 		}

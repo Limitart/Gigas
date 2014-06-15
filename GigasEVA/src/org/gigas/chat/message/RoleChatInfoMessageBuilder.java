@@ -4,11 +4,11 @@ package org.gigas.chat.message;
 
 import org.gigas.chat.message.proto.ChatMessageFactory;
 import org.gigas.chat.message.proto.ChatMessageFactory.RoleChatInfo.Builder;
-import org.gigas.core.server.message.ProtoBufPackage;
+import org.gigas.core.server.message.ProtoBufMessage;
 
 import com.google.protobuf.MessageLite;
 
-public class RoleChatInfoMessageBuilder extends ProtoBufPackage {
+public class RoleChatInfoMessageBuilder extends ProtoBufMessage {
 
 	private long roleId;// 角色ID
 

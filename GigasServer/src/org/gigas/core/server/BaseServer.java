@@ -26,11 +26,13 @@ import org.gigas.core.server.channelInitializer.StringChannelInitializer;
 import org.gigas.core.server.channelInitializer.enumeration.ChannelInitializerEnum;
 import org.gigas.core.server.config.ServerConfig;
 import org.gigas.core.server.handler.ihandler.IHttpHandler;
-import org.gigas.core.server.message.dictionary.IMessageDictionary;
-import org.gigas.core.server.thread.IThread;
+import org.gigas.core.server.message.dictionary.idictionary.IMessageDictionary;
+import org.gigas.core.server.thread.ByteMessageBasedMessageHandleThread;
+import org.gigas.core.server.thread.ByteMessageBasedMessageSenderThread;
 import org.gigas.core.server.thread.ProtoBufBasedMessageHandleThread;
 import org.gigas.core.server.thread.ProtoBufBasedMessageSenderThread;
 import org.gigas.core.server.thread.StringBasedMessageHandleThread;
+import org.gigas.core.server.thread.ithread.IThread;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.input.SAXBuilder;
@@ -238,6 +240,12 @@ public class BaseServer implements IServer {
 			}
 			messageDictionary.registerAllMessage();
 		} else if (protocolEnum.equals(ChannelInitializerEnum.BYTE_CUSTOMED)) {
+			((Thread) (handleThread = new ByteMessageBasedMessageHandleThread("ByteMessageHandle", this))).start();
+			((Thread) (senderThread = new ByteMessageBasedMessageSenderThread("ByteMessageSender", this))).start();
+			if (messageDictionary == null) {
+				throw new MessageException("messageDictionary is not set!please call setMessageDictionary first!");
+			}
+			messageDictionary.registerAllMessage();
 		} else if (protocolEnum.equals(ChannelInitializerEnum.HTTP)) {
 			if (httpHandler == null) {
 				throw new MessageException("http Handler is not set!");

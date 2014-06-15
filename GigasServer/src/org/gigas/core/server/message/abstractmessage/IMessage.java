@@ -1,4 +1,4 @@
-package org.gigas.core.client.message;
+package org.gigas.core.server.message.abstractmessage;
 
 /**
  * 基础消息接口

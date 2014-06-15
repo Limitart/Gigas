@@ -8,7 +8,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.gigas.core.exception.MessageException;
 import org.gigas.core.server.handler.ihandler.IProtobufHandler;
-import org.gigas.core.server.message.ProtoBufPackage;
+import org.gigas.core.server.message.ProtoBufMessage;
+import org.gigas.core.server.message.dictionary.idictionary.IMessageDictionary;
 
 import com.google.protobuf.AbstractMessageLite.Builder;
 import com.google.protobuf.MessageLite;
@@ -21,7 +22,7 @@ import com.google.protobuf.MessageLite;
  */
 public abstract class ProtoBufDictionary implements IMessageDictionary<Object, IProtobufHandler> {
 	private static Logger log = LogManager.getLogger(ProtoBufDictionary.class);
-	private HashMap<Integer, ProtoBufPackage> id_messageMap = new HashMap<>();
+	private HashMap<Integer, ProtoBufMessage> id_messageMap = new HashMap<>();
 	private HashMap<Integer, Class<? extends IProtobufHandler>> id_handlerMap = new HashMap<>();
 
 	@Override
@@ -30,7 +31,7 @@ public abstract class ProtoBufDictionary implements IMessageDictionary<Object, I
 		if (!id_messageMap.containsKey(id)) {
 			throw new MessageException("id:" + id + " message not exist!");
 		}
-		ProtoBufPackage protoBufMessageAbstract = id_messageMap.get(id);
+		ProtoBufMessage protoBufMessageAbstract = id_messageMap.get(id);
 		Class<? extends MessageLite> clazz = protoBufMessageAbstract.getClazz();
 		Builder result = null;
 		try {
@@ -68,7 +69,7 @@ public abstract class ProtoBufDictionary implements IMessageDictionary<Object, I
 		if (id_messageMap.containsKey(id)) {
 			throw new MessageException("id:" + id + " duplicate message");
 		}
-		ProtoBufPackage protoBufMessageAbstract = new ProtoBufPackage() {
+		ProtoBufMessage protoBufMessageAbstract = new ProtoBufMessage() {
 			@Override
 			public int getId() {
 				return id;
@@ -104,7 +105,6 @@ public abstract class ProtoBufDictionary implements IMessageDictionary<Object, I
 	public void register_proto(final int id, Class<? extends MessageLite> messageLite, Class<? extends IProtobufHandler> handlerClass) throws MessageException {
 		putMessage(id, messageLite);
 		putHanlder(id, handlerClass);
-
 	}
 
 	@Override

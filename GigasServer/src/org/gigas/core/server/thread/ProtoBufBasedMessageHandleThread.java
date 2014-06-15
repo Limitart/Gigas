@@ -7,8 +7,9 @@ import org.apache.logging.log4j.Logger;
 import org.gigas.core.exception.MessageException;
 import org.gigas.core.server.BaseServer;
 import org.gigas.core.server.handler.ihandler.IProtobufHandler;
-import org.gigas.core.server.message.ProtoBufPackage;
+import org.gigas.core.server.message.ProtoBufMessage;
 import org.gigas.core.server.message.dictionary.ProtoBufDictionary;
+import org.gigas.core.server.thread.ithread.IThread;
 
 /**
  * ProtoBuf消息处理线程
@@ -18,7 +19,7 @@ import org.gigas.core.server.message.dictionary.ProtoBufDictionary;
  */
 public class ProtoBufBasedMessageHandleThread extends Thread implements IThread {
 	private static Logger log = LogManager.getLogger(ProtoBufBasedMessageHandleThread.class);
-	private LinkedBlockingQueue<ProtoBufPackage> handleQueue = new LinkedBlockingQueue<>();
+	private LinkedBlockingQueue<ProtoBufMessage> handleQueue = new LinkedBlockingQueue<>();
 	private boolean stop = true;
 	private BaseServer server;
 
@@ -31,7 +32,7 @@ public class ProtoBufBasedMessageHandleThread extends Thread implements IThread 
 	public void run() {
 		stop = false;
 		while (!stop || !handleQueue.isEmpty()) {
-			ProtoBufPackage poll = handleQueue.poll();
+			ProtoBufMessage poll = handleQueue.poll();
 			if (poll == null) {
 				synchronized (this) {
 					try {
@@ -74,10 +75,10 @@ public class ProtoBufBasedMessageHandleThread extends Thread implements IThread 
 
 	@Override
 	public void addTask(Object t) {
-		if (!(t instanceof ProtoBufPackage)) {
+		if (!(t instanceof ProtoBufMessage)) {
 			return;
 		}
-		ProtoBufPackage message = (ProtoBufPackage) t;
+		ProtoBufMessage message = (ProtoBufMessage) t;
 		handleQueue.add(message);
 		synchronized (this) {
 			notify();

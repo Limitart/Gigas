@@ -42,7 +42,7 @@ public class CEVAClient implements Runnable {
 				rb.setRoleId(System.currentTimeMillis());
 				rb.setSex(true);
 				build.setRoleChatInfo(rb.build());
-				ChannelUtil.sendMessage_Protobuf(build, true);
+				ChannelUtil.sendMessage_Protobuf(messageClient, build, true);
 			}
 		} catch (ClientException | MessageException e) {
 			e.printStackTrace();

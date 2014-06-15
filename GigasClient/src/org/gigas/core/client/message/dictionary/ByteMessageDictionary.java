@@ -1,13 +1,13 @@
-package org.gigas.core.server.message.dictionary;
+package org.gigas.core.client.message.dictionary;
 
 import java.util.HashMap;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.gigas.core.client.handler.ihandler.IByteMessageHandler;
+import org.gigas.core.client.message.ByteMessage;
+import org.gigas.core.client.message.dictionary.idictionary.IMessageDictionary;
 import org.gigas.core.exception.MessageException;
-import org.gigas.core.server.handler.ihandler.IByteMessageHandler;
-import org.gigas.core.server.message.ByteMessage;
-import org.gigas.core.server.message.dictionary.idictionary.IMessageDictionary;
 
 /**
  * byte消息字典

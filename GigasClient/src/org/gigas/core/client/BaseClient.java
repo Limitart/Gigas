@@ -11,6 +11,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.gigas.core.client.channelInitializer.ByteChannelIntializer;
@@ -18,11 +19,13 @@ import org.gigas.core.client.channelInitializer.ProtoBufChannelInitializer;
 import org.gigas.core.client.channelInitializer.StringChannelInitializer;
 import org.gigas.core.client.channelInitializer.enumeration.ChannelInitializerEnum;
 import org.gigas.core.client.config.ClientConfig;
-import org.gigas.core.client.message.dictionary.ProtoBufDictionary;
-import org.gigas.core.client.thread.IThread;
+import org.gigas.core.client.message.dictionary.idictionary.IMessageDictionary;
+import org.gigas.core.client.thread.ByteMessageBasedMessageHandleThread;
+import org.gigas.core.client.thread.ByteMessageBasedMessageSenderThread;
 import org.gigas.core.client.thread.ProtoBufBasedMessageHandleThread;
 import org.gigas.core.client.thread.ProtoBufBasedMessageSenderThread;
 import org.gigas.core.client.thread.StringBasedMessageHandleThread;
+import org.gigas.core.client.thread.ithread.IThread;
 import org.gigas.core.exception.ClientException;
 import org.gigas.core.exception.MessageException;
 import org.jdom2.Document;
@@ -39,13 +42,14 @@ public class BaseClient {
 	private static Logger log = LogManager.getLogger(BaseClient.class);
 	private ClientConfig clientConfig = new ClientConfig();
 	// 消息字典
-	private ProtoBufDictionary messageDictionary;
+	@SuppressWarnings("rawtypes")
+	private IMessageDictionary messageDictionary;
 	private EventLoopGroup clientGroup;
 	private Bootstrap bootstrap;
 	private Channel session;
 	// 服务器实例
-	private static BaseClient instance;
-	private static Object lock = new Object();
+	// private static BaseClient instance;
+	// private static Object lock = new Object();
 	// 服务器解析协议类型
 	private ChannelInitializerEnum protocolEnum;
 	// 消息处理线程
@@ -61,31 +65,32 @@ public class BaseClient {
 		bootstrap.group(clientGroup);
 		bootstrap.channel(NioSocketChannel.class);
 		if (enumeration.equals(ChannelInitializerEnum.STRING_CUSTOMED)) {
-			bootstrap.handler(new StringChannelInitializer());
+			bootstrap.handler(new StringChannelInitializer(this));
 		} else if (enumeration.equals(ChannelInitializerEnum.GOOGLE_PROTOCOL_BUFFER)) {
-			bootstrap.handler(new ProtoBufChannelInitializer()).option(ChannelOption.TCP_NODELAY, true);
+			bootstrap.handler(new ProtoBufChannelInitializer(this)).option(ChannelOption.TCP_NODELAY, true);
 		} else if (enumeration.equals(ChannelInitializerEnum.BYTE_CUSTOMED)) {
-			bootstrap.handler(new ByteChannelIntializer());
+			bootstrap.handler(new ByteChannelIntializer(this));
 		}
 	}
 
 	public static BaseClient getInstance(ChannelInitializerEnum protocolEnum) throws ClientException {
-		if (instance == null) {
-			synchronized (lock) {
-				if (instance == null) {
-					instance = new BaseClient(protocolEnum);
-				}
-			}
-		}
-		return instance;
+		// if (instance == null) {
+		// synchronized (lock) {
+		// if (instance == null) {
+		// instance = new BaseClient(protocolEnum);
+		// }
+		// }
+		// }
+		return new BaseClient(protocolEnum);
 	}
 
-	public static BaseClient getInstance() throws ClientException {
-		if (instance == null) {
-			throw (new ClientException("please call getInstance(ChannelInitializerEnum) first,then you can user this method!"));
-		}
-		return instance;
-	}
+	// public static BaseClient getInstance() throws ClientException {
+	// if (instance == null) {
+	// throw (new
+	// ClientException("please call getInstance(ChannelInitializerEnum) first,then you can user this method!"));
+	// }
+	// return instance;
+	// }
 
 	public void initClient() throws ClientException {
 
@@ -106,8 +111,10 @@ public class BaseClient {
 					}
 				} else if ("securityinfo".equalsIgnoreCase(name)) {
 					String sucurityStr = temp.getValue();
-					byte[] bytes = sucurityStr.getBytes("UTF-8");
-					this.clientConfig.setSecurityBytes(bytes);
+					if (!StringUtils.isEmpty(sucurityStr)) {
+						byte[] bytes = sucurityStr.getBytes("UTF-8");
+						this.clientConfig.setSecurityBytes(bytes);
+					}
 				} else if ("ip".equalsIgnoreCase(name)) {
 					String ip = temp.getValue();
 					this.clientConfig.setIp(ip);
@@ -123,13 +130,19 @@ public class BaseClient {
 		if (protocolEnum.equals(ChannelInitializerEnum.STRING_CUSTOMED)) {
 			handleThread = new StringBasedMessageHandleThread("StringMessageHandle");
 		} else if (protocolEnum.equals(ChannelInitializerEnum.GOOGLE_PROTOCOL_BUFFER)) {
-			handleThread = new ProtoBufBasedMessageHandleThread("ProtoBufMessageHandle");
-			senderThread = new ProtoBufBasedMessageSenderThread("ProtoBufMessageSender");
+			handleThread = new ProtoBufBasedMessageHandleThread("ProtoBufMessageHandle", this);
+			senderThread = new ProtoBufBasedMessageSenderThread("ProtoBufMessageSender", this);
 			if (messageDictionary == null) {
 				throw new MessageException("messageDictionary is not set!please call setMessageDictionary first!");
 			}
 			messageDictionary.registerAllMessage();
 		} else if (protocolEnum.equals(ChannelInitializerEnum.BYTE_CUSTOMED)) {
+			handleThread = new ByteMessageBasedMessageHandleThread("ByteMessageHandle", this);
+			senderThread = new ByteMessageBasedMessageSenderThread("ByteMessageSender", this);
+			if (messageDictionary == null) {
+				throw new MessageException("messageDictionary is not set!please call setMessageDictionary first!");
+			}
+			messageDictionary.registerAllMessage();
 		}
 		// 消息处理线程
 		((Thread) handleThread).start();
@@ -167,11 +180,13 @@ public class BaseClient {
 		senderThread.addTask(tesk);
 	}
 
-	public void setMessageDictionary(ProtoBufDictionary messageDictionary) {
+	@SuppressWarnings("rawtypes")
+	public void setMessageDictionary(IMessageDictionary messageDictionary) {
 		this.messageDictionary = messageDictionary;
 	}
 
-	public ProtoBufDictionary getMessageDictionary() {
+	@SuppressWarnings("rawtypes")
+	public IMessageDictionary getMessageDictionary() {
 		return messageDictionary;
 	}
 

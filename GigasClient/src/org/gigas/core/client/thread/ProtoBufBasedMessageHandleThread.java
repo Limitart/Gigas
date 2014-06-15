@@ -5,10 +5,10 @@ import java.util.concurrent.LinkedBlockingQueue;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.gigas.core.client.BaseClient;
-import org.gigas.core.client.handler.IHandler;
-import org.gigas.core.client.message.ProtoBufPackage;
+import org.gigas.core.client.handler.ihandler.IProtobufHandler;
+import org.gigas.core.client.message.ProtoBufMessage;
 import org.gigas.core.client.message.dictionary.ProtoBufDictionary;
-import org.gigas.core.exception.ClientException;
+import org.gigas.core.client.thread.ithread.IThread;
 import org.gigas.core.exception.MessageException;
 
 /**
@@ -19,18 +19,20 @@ import org.gigas.core.exception.MessageException;
  */
 public class ProtoBufBasedMessageHandleThread extends Thread implements IThread {
 	private static Logger log = LogManager.getLogger(ProtoBufBasedMessageHandleThread.class);
-	private LinkedBlockingQueue<ProtoBufPackage> handleQueue = new LinkedBlockingQueue<>();
+	private LinkedBlockingQueue<ProtoBufMessage> handleQueue = new LinkedBlockingQueue<>();
 	private boolean stop = true;
+	private BaseClient client;
 
-	public ProtoBufBasedMessageHandleThread(String name) {
+	public ProtoBufBasedMessageHandleThread(String name, BaseClient client) {
 		this.setName(name);
+		this.client = client;
 	}
 
 	@Override
 	public void run() {
 		stop = false;
 		while (!stop || !handleQueue.isEmpty()) {
-			ProtoBufPackage poll = handleQueue.poll();
+			ProtoBufMessage poll = handleQueue.poll();
 			if (poll == null) {
 				synchronized (this) {
 					try {
@@ -41,15 +43,14 @@ public class ProtoBufBasedMessageHandleThread extends Thread implements IThread 
 				}
 			} else {
 				try {
-					ProtoBufDictionary messageDictionary = BaseClient.getInstance().getMessageDictionary();
+					ProtoBufDictionary messageDictionary = (ProtoBufDictionary) client.getMessageDictionary();
 					if (messageDictionary != null) {
-						IHandler handler = messageDictionary.getHandler(poll.getId());
+						IProtobufHandler handler = messageDictionary.getHandler(poll.getId());
 						handler.setChannel(poll.getSrcChannel());
 						handler.setMessageId(poll.getId());
+						handler.setClient(client);
 						handler.handleMessage(poll.build());
 					}
-				} catch (ClientException e) {
-					log.error(e, e);
 				} catch (InstantiationException e) {
 					log.error(e, e);
 				} catch (IllegalAccessException e) {
@@ -74,10 +75,10 @@ public class ProtoBufBasedMessageHandleThread extends Thread implements IThread 
 
 	@Override
 	public void addTask(Object t) {
-		if (!(t instanceof ProtoBufPackage)) {
+		if (!(t instanceof ProtoBufMessage)) {
 			return;
 		}
-		ProtoBufPackage message = (ProtoBufPackage) t;
+		ProtoBufMessage message = (ProtoBufMessage) t;
 		handleQueue.add(message);
 		synchronized (this) {
 			notify();

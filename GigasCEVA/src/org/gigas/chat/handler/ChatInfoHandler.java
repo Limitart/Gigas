@@ -3,11 +3,11 @@
 package org.gigas.chat.handler;
 
 import org.gigas.chat.message.proto.ChatMessageFactory.ChatInfo;
-import org.gigas.core.client.handler.IHandler;
+import org.gigas.core.client.handler.ihandler.IProtobufHandler;
 
 import com.google.protobuf.MessageLite;
 
-public class ChatInfoHandler extends IHandler {
+public class ChatInfoHandler extends IProtobufHandler {
 
 	@Override
 	public void handleMessage(MessageLite message) {

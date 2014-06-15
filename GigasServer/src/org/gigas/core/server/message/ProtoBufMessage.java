@@ -3,6 +3,8 @@ package org.gigas.core.server.message;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.gigas.core.server.message.abstractmessage.IMessage;
+
 import io.netty.channel.Channel;
 
 import com.google.protobuf.MessageLite;
@@ -13,7 +15,7 @@ import com.google.protobuf.MessageLite;
  * @author hank
  * 
  */
-public abstract class ProtoBufPackage implements IMessage {
+public abstract class ProtoBufMessage implements IMessage {
 	protected List<Channel> sendChannelList = new LinkedList<Channel>();
 	protected Channel srcChannel;
 	protected Class<? extends MessageLite> Clazz;

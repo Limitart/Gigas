@@ -1,4 +1,4 @@
-package org.gigas.core.client.thread;
+package org.gigas.core.server.thread.ithread;
 
 public interface IThread {
 	/**

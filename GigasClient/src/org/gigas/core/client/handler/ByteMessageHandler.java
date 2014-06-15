@@ -1,4 +1,4 @@
-package org.gigas.core.server.handler;
+package org.gigas.core.client.handler;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler.Sharable;
@@ -9,27 +9,24 @@ import io.netty.util.AttributeKey;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.gigas.core.server.BaseServer;
-import org.gigas.core.server.codec.ProtoBufCustomedDecoder;
-import org.gigas.core.server.message.ProtoBufMessage;
-import org.gigas.core.server.message.dictionary.ProtoBufDictionary;
-
-import com.google.protobuf.MessageLite;
+import org.gigas.core.client.BaseClient;
+import org.gigas.core.client.message.ByteMessage;
+import org.gigas.core.client.message.dictionary.ByteMessageDictionary;
 
 /**
- * protobuf消息Hanlder
+ * byte消息Hanlder
  * 
  * @author hank
  * 
  */
 @Sharable
-public class ProtoBufMessageHandler extends ChannelInboundHandlerAdapter {
-	private BaseServer server;
-	private static Logger log = LogManager.getLogger(ProtoBufMessageHandler.class);
+public class ByteMessageHandler extends ChannelInboundHandlerAdapter {
+	private BaseClient client;
+	private static Logger log = LogManager.getLogger(ByteMessageHandler.class);
 	private final static AttributeKey<ByteBuf> BUFFERKEY = AttributeKey.valueOf("BUFFERKEY");
 
-	public ProtoBufMessageHandler(BaseServer whichserver) {
-		this.server = whichserver;
+	public ByteMessageHandler(BaseClient client) {
+		this.client = client;
 	}
 
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
@@ -58,14 +55,14 @@ public class ProtoBufMessageHandler extends ChannelInboundHandlerAdapter {
 		buffer.release();
 		try {
 			int readableBytes = tempBuf.readableBytes();// 可读的字节数
-			if (server.getServerConfig().getSecurityBytes() != null) {
-				if (readableBytes < server.getServerConfig().getSecurityBytes().length) {// 包头的长度不够
+			if (client.getClientConfig().getSecurityBytes() != null) {
+				if (readableBytes < client.getClientConfig().getSecurityBytes().length) {// 包头的长度不够
 					return;
 				}
-				byte[] sb = new byte[server.getServerConfig().getSecurityBytes().length];
+				byte[] sb = new byte[client.getClientConfig().getSecurityBytes().length];
 				tempBuf.readBytes(sb);
 				for (int i = 0; i < sb.length; ++i) {
-					if (sb[i] != server.getServerConfig().getSecurityBytes()[i]) {
+					if (sb[i] != client.getClientConfig().getSecurityBytes()[i]) {
 						log.error("security bytes error! disconneted!");
 						ctx.close();
 						return;
@@ -87,34 +84,16 @@ public class ProtoBufMessageHandler extends ChannelInboundHandlerAdapter {
 			final int id = tempBuf.readInt();
 			ByteBuf body = ctx.alloc().directBuffer(length - Integer.SIZE / Byte.SIZE);
 			tempBuf.readBytes(body);
-			final MessageLite message = ((ProtoBufDictionary) server.getMessageDictionary()).getMessage(id).build();
+			ByteMessage message = ((ByteMessageDictionary) client.getMessageDictionary()).getMessage(id);
 			if (message == null) {// 没有找到对应的消息类
 				log.error("id:" + id + " not exist!");
 				// ctx.close();
 				return;
 			}
-			ProtoBufCustomedDecoder protobufDecoder = new ProtoBufCustomedDecoder(message.getDefaultInstanceForType());
-			final MessageLite excuteDecode = protobufDecoder.excuteDecode(id, ctx, body);// 执行解码
+			message._readAll(body);
 			// 得到的消息派发
-			ProtoBufMessage protoBufPackage = new ProtoBufMessage() {
-
-				@Override
-				public int getId() {
-					return id;
-				}
-
-				@Override
-				public Class<? extends MessageLite> getClazz() {
-					return message.getClass();
-				}
-
-				@Override
-				public MessageLite build() {
-					return excuteDecode;
-				}
-			};
-			protoBufPackage.setSrcChannel(ctx.channel());
-			server.addHandleTask(protoBufPackage);
+			message.setSrcChannel(ctx.channel());
+			client.addHandleTask(message);
 			tempBuf.discardReadBytes();// 丢弃已读取字节
 		} catch (Exception e) {
 			log.error(e, e);
@@ -136,7 +115,6 @@ public class ProtoBufMessageHandler extends ChannelInboundHandlerAdapter {
 		log.info(ctx.channel().remoteAddress() + "connected!");
 		Attribute<ByteBuf> attr = ctx.attr(BUFFERKEY);
 		attr.set(ctx.alloc().directBuffer());
-		server.registerChannel(ctx.channel());
 	}
 
 	/**
@@ -147,7 +125,6 @@ public class ProtoBufMessageHandler extends ChannelInboundHandlerAdapter {
 		Attribute<ByteBuf> attr = ctx.attr(BUFFERKEY);
 		ByteBuf byteBuf = attr.getAndRemove();
 		byteBuf.release();
-		server.unregisterChannel(ctx.channel());
 	}
 
 	public void channelWritabilityChanged(ChannelHandlerContext ctx) throws Exception {
