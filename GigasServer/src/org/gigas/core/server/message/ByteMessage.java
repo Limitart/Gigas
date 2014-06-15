@@ -8,7 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.gigas.core.server.message.abstractmessage.IMessage;
+import org.gigas.core.server.message.imessage.IMessage;
 
 /**
  * byte消息虚拟类

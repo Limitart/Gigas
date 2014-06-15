@@ -3,7 +3,7 @@ package org.gigas.core.server.message;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.gigas.core.server.message.abstractmessage.IMessage;
+import org.gigas.core.server.message.imessage.IMessage;
 
 import io.netty.channel.Channel;
 
