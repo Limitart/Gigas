@@ -15,7 +15,7 @@ import org.apache.commons.lang3.StringUtils;
  * @author hank
  * 
  */
-public abstract class ByteMessage {
+public abstract class ByteMessage implements IMessage {
 
 	protected List<Channel> sendChannelList = new LinkedList<Channel>();
 	protected Channel srcChannel;
@@ -27,8 +27,6 @@ public abstract class ByteMessage {
 	public abstract boolean _readAll(ByteBuf buf);
 
 	public abstract Class<? extends ByteMessage> _getClazz();
-
-	public abstract int getId();
 
 	// impl method
 	protected void _putString(ByteBuf buf, String value) {
