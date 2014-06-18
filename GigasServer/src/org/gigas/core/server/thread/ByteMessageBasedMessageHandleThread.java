@@ -6,23 +6,23 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.gigas.core.exception.MessageException;
 import org.gigas.core.server.BaseServer;
-import org.gigas.core.server.handler.ihandler.IProtobufHandler;
-import org.gigas.core.server.message.ProtoBufPackage;
-import org.gigas.core.server.message.dictionary.ProtoBufDictionary;
+import org.gigas.core.server.handler.ihandler.IByteMessageHandler;
+import org.gigas.core.server.message.ByteMessage;
+import org.gigas.core.server.message.dictionary.ByteMessageDictionary;
 
 /**
- * ProtoBuf消息处理线程
+ * ByteMessage消息处理线程
  * 
  * @author hank
  * 
  */
-public class ProtoBufBasedMessageHandleThread extends Thread implements IThread {
-	private static Logger log = LogManager.getLogger(ProtoBufBasedMessageHandleThread.class);
-	private LinkedBlockingQueue<ProtoBufPackage> handleQueue = new LinkedBlockingQueue<>();
+public class ByteMessageBasedMessageHandleThread extends Thread implements IThread {
+	private static Logger log = LogManager.getLogger(ByteMessageBasedMessageHandleThread.class);
+	private LinkedBlockingQueue<ByteMessage> handleQueue = new LinkedBlockingQueue<>();
 	private boolean stop = true;
 	private BaseServer server;
 
-	public ProtoBufBasedMessageHandleThread(String name, BaseServer server) {
+	public ByteMessageBasedMessageHandleThread(String name, BaseServer server) {
 		this.setName(name);
 		this.server = server;
 	}
@@ -31,7 +31,7 @@ public class ProtoBufBasedMessageHandleThread extends Thread implements IThread 
 	public void run() {
 		stop = false;
 		while (!stop || !handleQueue.isEmpty()) {
-			ProtoBufPackage poll = handleQueue.poll();
+			ByteMessage poll = handleQueue.poll();
 			if (poll == null) {
 				synchronized (this) {
 					try {
@@ -42,13 +42,10 @@ public class ProtoBufBasedMessageHandleThread extends Thread implements IThread 
 				}
 			} else {
 				try {
-					ProtoBufDictionary messageDictionary = (ProtoBufDictionary) server.getMessageDictionary();
+					ByteMessageDictionary messageDictionary = (ByteMessageDictionary) server.getMessageDictionary();
 					if (messageDictionary != null) {
-						IProtobufHandler handler = messageDictionary.getHandler(poll.getId());
-						handler.setChannel(poll.getSrcChannel());
-						handler.setMessageId(poll.getId());
-						handler.setServer(server);
-						handler.handleMessage(poll.build());
+						IByteMessageHandler handler = messageDictionary.getHandler(poll.getId());
+						handler.handleMessage(poll);
 					}
 				} catch (InstantiationException e) {
 					log.error(e, e);
@@ -74,10 +71,10 @@ public class ProtoBufBasedMessageHandleThread extends Thread implements IThread 
 
 	@Override
 	public void addTask(Object t) {
-		if (!(t instanceof ProtoBufPackage)) {
+		if (!(t instanceof ByteMessage)) {
 			return;
 		}
-		ProtoBufPackage message = (ProtoBufPackage) t;
+		ByteMessage message = (ByteMessage) t;
 		handleQueue.add(message);
 		synchronized (this) {
 			notify();

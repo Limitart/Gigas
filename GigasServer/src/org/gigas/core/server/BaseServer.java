@@ -6,6 +6,7 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.util.NetUtil;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -13,6 +14,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.HashSet;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.gigas.core.exception.MessageException;
@@ -24,7 +26,7 @@ import org.gigas.core.server.channelInitializer.StringChannelInitializer;
 import org.gigas.core.server.channelInitializer.enumeration.ChannelInitializerEnum;
 import org.gigas.core.server.config.ServerConfig;
 import org.gigas.core.server.handler.ihandler.IHttpHandler;
-import org.gigas.core.server.message.dictionary.ProtoBufDictionary;
+import org.gigas.core.server.message.dictionary.IMessageDictionary;
 import org.gigas.core.server.thread.IThread;
 import org.gigas.core.server.thread.ProtoBufBasedMessageHandleThread;
 import org.gigas.core.server.thread.ProtoBufBasedMessageSenderThread;
@@ -48,7 +50,8 @@ public class BaseServer implements IServer {
 	// 客户端连接集合
 	private HashSet<Channel> channelMap = new HashSet<>();
 	// 服务器消息字典
-	private ProtoBufDictionary messageDictionary;
+	@SuppressWarnings("rawtypes")
+	private IMessageDictionary messageDictionary;
 	private EventLoopGroup acceptorGroup;
 	private EventLoopGroup clientGroup;
 	private ServerBootstrap bootstrap;
@@ -130,7 +133,10 @@ public class BaseServer implements IServer {
 	 * @throws UnsupportedEncodingException
 	 */
 	private void initServerConfig() throws ServerException, UnsupportedEncodingException {
-		String ipreg = "^(1\\d{2}|2[0-4]\\d|25[0-5]|[1-9]\\d|[1-9])\\." + "(1\\d{2}|2[0-4]\\d|25[0-5]|[1-9]\\d|\\d)\\." + "(1\\d{2}|2[0-4]\\d|25[0-5]|[1-9]\\d|\\d)\\." + "(1\\d{2}|2[0-4]\\d|25[0-5]|[1-9]\\d|\\d)$";
+		// String ipreg = "^(1\\d{2}|2[0-4]\\d|25[0-5]|[1-9]\\d|[1-9])\\." +
+		// "(1\\d{2}|2[0-4]\\d|25[0-5]|[1-9]\\d|\\d)\\." +
+		// "(1\\d{2}|2[0-4]\\d|25[0-5]|[1-9]\\d|\\d)\\." +
+		// "(1\\d{2}|2[0-4]\\d|25[0-5]|[1-9]\\d|\\d)$";
 		SAXBuilder builder = new SAXBuilder();
 		Document document = null;
 		try {
@@ -152,6 +158,9 @@ public class BaseServer implements IServer {
 				}
 			} else if ("securityinfo".equalsIgnoreCase(name)) {
 				String sucurityStr = temp.getValue();
+				if (StringUtils.isEmpty(sucurityStr)) {
+					continue;
+				}
 				byte[] bytes;
 				bytes = sucurityStr.getBytes("UTF-8");
 				this.serverConfig.setSecurityBytes(bytes);
@@ -166,10 +175,12 @@ public class BaseServer implements IServer {
 				List<Element> children = temp.getChildren();
 				for (Element elt : children) {
 					String value = elt.getValue();
-					if (!value.matches(ipreg)) {
+					if (!NetUtil.isValidIpV4Address(value) && !StringUtils.isEmpty(value)) {
 						throw new ServerException("ip-allow not matches the reg!");
 					}
-					this.serverConfig.getIps().add(value);
+					if (!StringUtils.isEmpty(value)) {
+						this.serverConfig.getIps().add(value);
+					}
 				}
 			}
 		}
@@ -252,6 +263,7 @@ public class BaseServer implements IServer {
 				} catch (InterruptedException e) {
 					log.error(e, e);
 					handleThread.stopThread(true);
+					senderThread.stopThread(true);
 				} finally {
 					clientGroup.shutdownGracefully();
 					acceptorGroup.shutdownGracefully();
@@ -285,11 +297,13 @@ public class BaseServer implements IServer {
 		senderThread.addTask(tesk);
 	}
 
-	public ProtoBufDictionary getMessageDictionary() {
+	@SuppressWarnings("rawtypes")
+	public IMessageDictionary getMessageDictionary() {
 		return messageDictionary;
 	}
 
-	public void setMessageDictionary(ProtoBufDictionary messageDictionary) {
+	@SuppressWarnings("rawtypes")
+	public void setMessageDictionary(IMessageDictionary messageDictionary) {
 		this.messageDictionary = messageDictionary;
 	}
 

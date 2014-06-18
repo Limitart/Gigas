@@ -8,7 +8,6 @@ import org.gigas.core.server.message.ProtoBufPackage;
 
 import com.google.protobuf.MessageLite;
 
-
 public class RoleChatInfoMessageBuilder extends ProtoBufPackage {
 
 	private long roleId;// 角色ID
@@ -20,53 +19,56 @@ public class RoleChatInfoMessageBuilder extends ProtoBufPackage {
 	private boolean sex;// 性别
 
 	/**
-	 *角色IDsetter
+	 * 角色IDsetter
 	 */
-	public void setRoleId(long roleId){ 
-		this.roleId=roleId;
+	public void setRoleId(long roleId) {
+		this.roleId = roleId;
 	}
 
 	/**
-	 *角色IDgetter
+	 * 角色IDgetter
 	 */
 	public long getRoleId() {
 		return this.roleId;
 	}
+
 	/**
-	 *角色名setter
+	 * 角色名setter
 	 */
-	public void setName(String name){ 
-		this.name=name;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	/**
-	 *角色名getter
+	 * 角色名getter
 	 */
 	public String getName() {
 		return this.name;
 	}
+
 	/**
-	 *等级setter
+	 * 等级setter
 	 */
-	public void setLevel(int level){ 
-		this.level=level;
+	public void setLevel(int level) {
+		this.level = level;
 	}
 
 	/**
-	 *等级getter
+	 * 等级getter
 	 */
 	public int getLevel() {
 		return this.level;
 	}
+
 	/**
-	 *性别setter
+	 * 性别setter
 	 */
-	public void setSex(boolean sex){ 
-		this.sex=sex;
+	public void setSex(boolean sex) {
+		this.sex = sex;
 	}
 
 	/**
-	 *性别getter
+	 * 性别getter
 	 */
 	public boolean getSex() {
 		return this.sex;
@@ -91,6 +93,5 @@ public class RoleChatInfoMessageBuilder extends ProtoBufPackage {
 	public Class<? extends MessageLite> getClazz() {
 		return ChatMessageFactory.RoleChatInfo.class;
 	}
-	
 
 }

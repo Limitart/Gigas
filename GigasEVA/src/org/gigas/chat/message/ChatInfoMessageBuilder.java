@@ -11,7 +11,6 @@ import org.gigas.core.server.message.ProtoBufPackage;
 
 import com.google.protobuf.MessageLite;
 
-
 public class ChatInfoMessageBuilder extends ProtoBufPackage {
 
 	private String content;// 聊天内容
@@ -23,53 +22,56 @@ public class ChatInfoMessageBuilder extends ProtoBufPackage {
 	private RoleChatInfo roleChatInfo;// roleChatInfo
 
 	/**
-	 *聊天内容setter
+	 * 聊天内容setter
 	 */
-	public void setContent(String content){ 
-		this.content=content;
+	public void setContent(String content) {
+		this.content = content;
 	}
 
 	/**
-	 *聊天内容getter
+	 * 聊天内容getter
 	 */
 	public String getContent() {
 		return this.content;
 	}
+
 	/**
-	 *发送者编号setter
+	 * 发送者编号setter
 	 */
-	public void setNumber(long number){ 
-		this.number=number;
+	public void setNumber(long number) {
+		this.number = number;
 	}
 
 	/**
-	 *发送者编号getter
+	 * 发送者编号getter
 	 */
 	public long getNumber() {
 		return this.number;
 	}
+
 	/**
-	 *整型数组setter
+	 * 整型数组setter
 	 */
-	public void setIntegerList(List<Integer> integerList){ 
-		this.integerList=integerList;
+	public void setIntegerList(List<Integer> integerList) {
+		this.integerList = integerList;
 	}
 
 	/**
-	 *整型数组getter
+	 * 整型数组getter
 	 */
 	public List<Integer> getIntegerList() {
 		return this.integerList;
 	}
+
 	/**
-	 *roleChatInfosetter
+	 * roleChatInfosetter
 	 */
-	public void setRoleChatInfo(RoleChatInfo roleChatInfo){ 
-		this.roleChatInfo=roleChatInfo;
+	public void setRoleChatInfo(RoleChatInfo roleChatInfo) {
+		this.roleChatInfo = roleChatInfo;
 	}
 
 	/**
-	 *roleChatInfogetter
+	 * roleChatInfogetter
 	 */
 	public RoleChatInfo getRoleChatInfo() {
 		return this.roleChatInfo;
@@ -94,6 +96,5 @@ public class ChatInfoMessageBuilder extends ProtoBufPackage {
 	public Class<? extends MessageLite> getClazz() {
 		return ChatMessageFactory.ChatInfo.class;
 	}
-	
 
 }

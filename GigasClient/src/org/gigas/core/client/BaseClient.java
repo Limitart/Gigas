@@ -28,6 +28,7 @@ import org.gigas.core.exception.MessageException;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.input.SAXBuilder;
+
 /**
  * 客户端原型
  * 

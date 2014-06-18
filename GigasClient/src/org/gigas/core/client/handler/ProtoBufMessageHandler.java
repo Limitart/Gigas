@@ -71,7 +71,8 @@ public class ProtoBufMessageHandler extends ChannelInboundHandlerAdapter {
 			tempBuf.markReaderIndex();// 标记当前readindex
 			int length = tempBuf.readInt();
 			int afterHeadLength = tempBuf.readableBytes();// 去除包头后的长度
-//			log.debug("nowLentgh->" + afterHeadLength + " needLentgh->" + length);
+			// log.debug("nowLentgh->" + afterHeadLength + " needLentgh->" +
+			// length);
 			if (afterHeadLength < length) {
 				tempBuf.resetReaderIndex();// 重置当前readindex
 				return;

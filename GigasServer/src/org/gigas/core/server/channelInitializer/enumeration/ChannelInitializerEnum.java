@@ -13,11 +13,11 @@ public enum ChannelInitializerEnum {
 	/**
 	 * google protobuf
 	 */
-	GOOGLE_PROTOCOL_BUFFER, 
+	GOOGLE_PROTOCOL_BUFFER,
 	/**
 	 * 字节消息自定义
 	 */
-	BYTE_CUSTOMED, 
+	BYTE_CUSTOMED,
 	/**
 	 * 字符串消息自定义
 	 */

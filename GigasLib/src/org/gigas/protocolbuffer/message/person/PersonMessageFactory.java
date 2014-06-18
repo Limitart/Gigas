@@ -4,518 +4,515 @@
 package org.gigas.protocolbuffer.message.person;
 
 public final class PersonMessageFactory {
-  private PersonMessageFactory() {}
-  public static void registerAllExtensions(
-      com.google.protobuf.ExtensionRegistryLite registry) {
-  }
-  public interface PersonMessageOrBuilder
-      extends com.google.protobuf.MessageLiteOrBuilder {
+	private PersonMessageFactory() {
+	}
 
-    // required string name = 1;
-    /**
-     * <code>required string name = 1;</code>
-     */
-    boolean hasName();
-    /**
-     * <code>required string name = 1;</code>
-     */
-    java.lang.String getName();
-    /**
-     * <code>required string name = 1;</code>
-     */
-    com.google.protobuf.ByteString
-        getNameBytes();
+	public static void registerAllExtensions(com.google.protobuf.ExtensionRegistryLite registry) {
+	}
 
-    // required int32 age = 2;
-    /**
-     * <code>required int32 age = 2;</code>
-     */
-    boolean hasAge();
-    /**
-     * <code>required int32 age = 2;</code>
-     */
-    int getAge();
-  }
-  /**
-   * Protobuf type {@code PersonMessage}
-   */
-  public static final class PersonMessage extends
-      com.google.protobuf.GeneratedMessageLite
-      implements PersonMessageOrBuilder {
-    // Use PersonMessage.newBuilder() to construct.
-    private PersonMessage(com.google.protobuf.GeneratedMessageLite.Builder builder) {
-      super(builder);
+	public interface PersonMessageOrBuilder extends com.google.protobuf.MessageLiteOrBuilder {
 
-    }
-    private PersonMessage(boolean noInit) {}
+		// required string name = 1;
+		/**
+		 * <code>required string name = 1;</code>
+		 */
+		boolean hasName();
 
-    private static final PersonMessage defaultInstance;
-    public static PersonMessage getDefaultInstance() {
-      return defaultInstance;
-    }
+		/**
+		 * <code>required string name = 1;</code>
+		 */
+		java.lang.String getName();
 
-    public PersonMessage getDefaultInstanceForType() {
-      return defaultInstance;
-    }
+		/**
+		 * <code>required string name = 1;</code>
+		 */
+		com.google.protobuf.ByteString getNameBytes();
 
-    private PersonMessage(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      initFields();
-      int mutable_bitField0_ = 0;
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            default: {
-              if (!parseUnknownField(input,
-                                     extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-            case 10: {
-              bitField0_ |= 0x00000001;
-              name_ = input.readBytes();
-              break;
-            }
-            case 16: {
-              bitField0_ |= 0x00000002;
-              age_ = input.readInt32();
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e.getMessage()).setUnfinishedMessage(this);
-      } finally {
-        makeExtensionsImmutable();
-      }
-    }
-    public static com.google.protobuf.Parser<PersonMessage> PARSER =
-        new com.google.protobuf.AbstractParser<PersonMessage>() {
-      public PersonMessage parsePartialFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return new PersonMessage(input, extensionRegistry);
-      }
-    };
+		// required int32 age = 2;
+		/**
+		 * <code>required int32 age = 2;</code>
+		 */
+		boolean hasAge();
 
-    @java.lang.Override
-    public com.google.protobuf.Parser<PersonMessage> getParserForType() {
-      return PARSER;
-    }
+		/**
+		 * <code>required int32 age = 2;</code>
+		 */
+		int getAge();
+	}
 
-    private int bitField0_;
-    // required string name = 1;
-    public static final int NAME_FIELD_NUMBER = 1;
-    private java.lang.Object name_;
-    /**
-     * <code>required string name = 1;</code>
-     */
-    public boolean hasName() {
-      return ((bitField0_ & 0x00000001) == 0x00000001);
-    }
-    /**
-     * <code>required string name = 1;</code>
-     */
-    public java.lang.String getName() {
-      java.lang.Object ref = name_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        if (bs.isValidUtf8()) {
-          name_ = s;
-        }
-        return s;
-      }
-    }
-    /**
-     * <code>required string name = 1;</code>
-     */
-    public com.google.protobuf.ByteString
-        getNameBytes() {
-      java.lang.Object ref = name_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        name_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
+	/**
+	 * Protobuf type {@code PersonMessage}
+	 */
+	public static final class PersonMessage extends com.google.protobuf.GeneratedMessageLite implements PersonMessageOrBuilder {
+		// Use PersonMessage.newBuilder() to construct.
+		private PersonMessage(com.google.protobuf.GeneratedMessageLite.Builder builder) {
+			super(builder);
 
-    // required int32 age = 2;
-    public static final int AGE_FIELD_NUMBER = 2;
-    private int age_;
-    /**
-     * <code>required int32 age = 2;</code>
-     */
-    public boolean hasAge() {
-      return ((bitField0_ & 0x00000002) == 0x00000002);
-    }
-    /**
-     * <code>required int32 age = 2;</code>
-     */
-    public int getAge() {
-      return age_;
-    }
+		}
 
-    private void initFields() {
-      name_ = "";
-      age_ = 0;
-    }
-    private byte memoizedIsInitialized = -1;
-    public final boolean isInitialized() {
-      byte isInitialized = memoizedIsInitialized;
-      if (isInitialized != -1) return isInitialized == 1;
+		private PersonMessage(boolean noInit) {
+		}
 
-      if (!hasName()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
-      if (!hasAge()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
-      memoizedIsInitialized = 1;
-      return true;
-    }
+		private static final PersonMessage defaultInstance;
 
-    public void writeTo(com.google.protobuf.CodedOutputStream output)
-                        throws java.io.IOException {
-      getSerializedSize();
-      if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeBytes(1, getNameBytes());
-      }
-      if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        output.writeInt32(2, age_);
-      }
-    }
+		public static PersonMessage getDefaultInstance() {
+			return defaultInstance;
+		}
 
-    private int memoizedSerializedSize = -1;
-    public int getSerializedSize() {
-      int size = memoizedSerializedSize;
-      if (size != -1) return size;
+		public PersonMessage getDefaultInstanceForType() {
+			return defaultInstance;
+		}
 
-      size = 0;
-      if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(1, getNameBytes());
-      }
-      if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(2, age_);
-      }
-      memoizedSerializedSize = size;
-      return size;
-    }
+		private PersonMessage(com.google.protobuf.CodedInputStream input, com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws com.google.protobuf.InvalidProtocolBufferException {
+			initFields();
+			int mutable_bitField0_ = 0;
+			try {
+				boolean done = false;
+				while (!done) {
+					int tag = input.readTag();
+					switch (tag) {
+					case 0:
+						done = true;
+						break;
+					default: {
+						if (!parseUnknownField(input, extensionRegistry, tag)) {
+							done = true;
+						}
+						break;
+					}
+					case 10: {
+						bitField0_ |= 0x00000001;
+						name_ = input.readBytes();
+						break;
+					}
+					case 16: {
+						bitField0_ |= 0x00000002;
+						age_ = input.readInt32();
+						break;
+					}
+					}
+				}
+			} catch (com.google.protobuf.InvalidProtocolBufferException e) {
+				throw e.setUnfinishedMessage(this);
+			} catch (java.io.IOException e) {
+				throw new com.google.protobuf.InvalidProtocolBufferException(e.getMessage()).setUnfinishedMessage(this);
+			} finally {
+				makeExtensionsImmutable();
+			}
+		}
 
-    private static final long serialVersionUID = 0L;
-    @java.lang.Override
-    protected java.lang.Object writeReplace()
-        throws java.io.ObjectStreamException {
-      return super.writeReplace();
-    }
+		public static com.google.protobuf.Parser<PersonMessage> PARSER = new com.google.protobuf.AbstractParser<PersonMessage>() {
+			public PersonMessage parsePartialFrom(com.google.protobuf.CodedInputStream input, com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws com.google.protobuf.InvalidProtocolBufferException {
+				return new PersonMessage(input, extensionRegistry);
+			}
+		};
 
-    public static org.gigas.protocolbuffer.message.person.PersonMessageFactory.PersonMessage parseFrom(
-        com.google.protobuf.ByteString data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static org.gigas.protocolbuffer.message.person.PersonMessageFactory.PersonMessage parseFrom(
-        com.google.protobuf.ByteString data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static org.gigas.protocolbuffer.message.person.PersonMessageFactory.PersonMessage parseFrom(byte[] data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static org.gigas.protocolbuffer.message.person.PersonMessageFactory.PersonMessage parseFrom(
-        byte[] data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static org.gigas.protocolbuffer.message.person.PersonMessageFactory.PersonMessage parseFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return PARSER.parseFrom(input);
-    }
-    public static org.gigas.protocolbuffer.message.person.PersonMessageFactory.PersonMessage parseFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
-    }
-    public static org.gigas.protocolbuffer.message.person.PersonMessageFactory.PersonMessage parseDelimitedFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input);
-    }
-    public static org.gigas.protocolbuffer.message.person.PersonMessageFactory.PersonMessage parseDelimitedFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input, extensionRegistry);
-    }
-    public static org.gigas.protocolbuffer.message.person.PersonMessageFactory.PersonMessage parseFrom(
-        com.google.protobuf.CodedInputStream input)
-        throws java.io.IOException {
-      return PARSER.parseFrom(input);
-    }
-    public static org.gigas.protocolbuffer.message.person.PersonMessageFactory.PersonMessage parseFrom(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
-    }
+		@java.lang.Override
+		public com.google.protobuf.Parser<PersonMessage> getParserForType() {
+			return PARSER;
+		}
 
-    public static Builder newBuilder() { return Builder.create(); }
-    public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder(org.gigas.protocolbuffer.message.person.PersonMessageFactory.PersonMessage prototype) {
-      return newBuilder().mergeFrom(prototype);
-    }
-    public Builder toBuilder() { return newBuilder(this); }
+		private int bitField0_;
+		// required string name = 1;
+		public static final int NAME_FIELD_NUMBER = 1;
+		private java.lang.Object name_;
 
-    /**
-     * Protobuf type {@code PersonMessage}
-     */
-    public static final class Builder extends
-        com.google.protobuf.GeneratedMessageLite.Builder<
-          org.gigas.protocolbuffer.message.person.PersonMessageFactory.PersonMessage, Builder>
-        implements org.gigas.protocolbuffer.message.person.PersonMessageFactory.PersonMessageOrBuilder {
-      // Construct using org.gigas.protocolbuffer.message.person.PersonMessageFactory.PersonMessage.newBuilder()
-      private Builder() {
-        maybeForceBuilderInitialization();
-      }
+		/**
+		 * <code>required string name = 1;</code>
+		 */
+		public boolean hasName() {
+			return ((bitField0_ & 0x00000001) == 0x00000001);
+		}
 
-      private void maybeForceBuilderInitialization() {
-      }
-      private static Builder create() {
-        return new Builder();
-      }
+		/**
+		 * <code>required string name = 1;</code>
+		 */
+		public java.lang.String getName() {
+			java.lang.Object ref = name_;
+			if (ref instanceof java.lang.String) {
+				return (java.lang.String) ref;
+			} else {
+				com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
+				java.lang.String s = bs.toStringUtf8();
+				if (bs.isValidUtf8()) {
+					name_ = s;
+				}
+				return s;
+			}
+		}
 
-      public Builder clear() {
-        super.clear();
-        name_ = "";
-        bitField0_ = (bitField0_ & ~0x00000001);
-        age_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000002);
-        return this;
-      }
+		/**
+		 * <code>required string name = 1;</code>
+		 */
+		public com.google.protobuf.ByteString getNameBytes() {
+			java.lang.Object ref = name_;
+			if (ref instanceof java.lang.String) {
+				com.google.protobuf.ByteString b = com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
+				name_ = b;
+				return b;
+			} else {
+				return (com.google.protobuf.ByteString) ref;
+			}
+		}
 
-      public Builder clone() {
-        return create().mergeFrom(buildPartial());
-      }
+		// required int32 age = 2;
+		public static final int AGE_FIELD_NUMBER = 2;
+		private int age_;
 
-      public org.gigas.protocolbuffer.message.person.PersonMessageFactory.PersonMessage getDefaultInstanceForType() {
-        return org.gigas.protocolbuffer.message.person.PersonMessageFactory.PersonMessage.getDefaultInstance();
-      }
+		/**
+		 * <code>required int32 age = 2;</code>
+		 */
+		public boolean hasAge() {
+			return ((bitField0_ & 0x00000002) == 0x00000002);
+		}
 
-      public org.gigas.protocolbuffer.message.person.PersonMessageFactory.PersonMessage build() {
-        org.gigas.protocolbuffer.message.person.PersonMessageFactory.PersonMessage result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(result);
-        }
-        return result;
-      }
+		/**
+		 * <code>required int32 age = 2;</code>
+		 */
+		public int getAge() {
+			return age_;
+		}
 
-      public org.gigas.protocolbuffer.message.person.PersonMessageFactory.PersonMessage buildPartial() {
-        org.gigas.protocolbuffer.message.person.PersonMessageFactory.PersonMessage result = new org.gigas.protocolbuffer.message.person.PersonMessageFactory.PersonMessage(this);
-        int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
-        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
-          to_bitField0_ |= 0x00000001;
-        }
-        result.name_ = name_;
-        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
-          to_bitField0_ |= 0x00000002;
-        }
-        result.age_ = age_;
-        result.bitField0_ = to_bitField0_;
-        return result;
-      }
+		private void initFields() {
+			name_ = "";
+			age_ = 0;
+		}
 
-      public Builder mergeFrom(org.gigas.protocolbuffer.message.person.PersonMessageFactory.PersonMessage other) {
-        if (other == org.gigas.protocolbuffer.message.person.PersonMessageFactory.PersonMessage.getDefaultInstance()) return this;
-        if (other.hasName()) {
-          bitField0_ |= 0x00000001;
-          name_ = other.name_;
-          
-        }
-        if (other.hasAge()) {
-          setAge(other.getAge());
-        }
-        return this;
-      }
+		private byte memoizedIsInitialized = -1;
 
-      public final boolean isInitialized() {
-        if (!hasName()) {
-          
-          return false;
-        }
-        if (!hasAge()) {
-          
-          return false;
-        }
-        return true;
-      }
+		public final boolean isInitialized() {
+			byte isInitialized = memoizedIsInitialized;
+			if (isInitialized != -1)
+				return isInitialized == 1;
 
-      public Builder mergeFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws java.io.IOException {
-        org.gigas.protocolbuffer.message.person.PersonMessageFactory.PersonMessage parsedMessage = null;
-        try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
-        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.gigas.protocolbuffer.message.person.PersonMessageFactory.PersonMessage) e.getUnfinishedMessage();
-          throw e;
-        } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
-        return this;
-      }
-      private int bitField0_;
+			if (!hasName()) {
+				memoizedIsInitialized = 0;
+				return false;
+			}
+			if (!hasAge()) {
+				memoizedIsInitialized = 0;
+				return false;
+			}
+			memoizedIsInitialized = 1;
+			return true;
+		}
 
-      // required string name = 1;
-      private java.lang.Object name_ = "";
-      /**
-       * <code>required string name = 1;</code>
-       */
-      public boolean hasName() {
-        return ((bitField0_ & 0x00000001) == 0x00000001);
-      }
-      /**
-       * <code>required string name = 1;</code>
-       */
-      public java.lang.String getName() {
-        java.lang.Object ref = name_;
-        if (!(ref instanceof java.lang.String)) {
-          java.lang.String s = ((com.google.protobuf.ByteString) ref)
-              .toStringUtf8();
-          name_ = s;
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
-      }
-      /**
-       * <code>required string name = 1;</code>
-       */
-      public com.google.protobuf.ByteString
-          getNameBytes() {
-        java.lang.Object ref = name_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          name_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>required string name = 1;</code>
-       */
-      public Builder setName(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
-        name_ = value;
-        
-        return this;
-      }
-      /**
-       * <code>required string name = 1;</code>
-       */
-      public Builder clearName() {
-        bitField0_ = (bitField0_ & ~0x00000001);
-        name_ = getDefaultInstance().getName();
-        
-        return this;
-      }
-      /**
-       * <code>required string name = 1;</code>
-       */
-      public Builder setNameBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
-        name_ = value;
-        
-        return this;
-      }
+		public void writeTo(com.google.protobuf.CodedOutputStream output) throws java.io.IOException {
+			getSerializedSize();
+			if (((bitField0_ & 0x00000001) == 0x00000001)) {
+				output.writeBytes(1, getNameBytes());
+			}
+			if (((bitField0_ & 0x00000002) == 0x00000002)) {
+				output.writeInt32(2, age_);
+			}
+		}
 
-      // required int32 age = 2;
-      private int age_ ;
-      /**
-       * <code>required int32 age = 2;</code>
-       */
-      public boolean hasAge() {
-        return ((bitField0_ & 0x00000002) == 0x00000002);
-      }
-      /**
-       * <code>required int32 age = 2;</code>
-       */
-      public int getAge() {
-        return age_;
-      }
-      /**
-       * <code>required int32 age = 2;</code>
-       */
-      public Builder setAge(int value) {
-        bitField0_ |= 0x00000002;
-        age_ = value;
-        
-        return this;
-      }
-      /**
-       * <code>required int32 age = 2;</code>
-       */
-      public Builder clearAge() {
-        bitField0_ = (bitField0_ & ~0x00000002);
-        age_ = 0;
-        
-        return this;
-      }
+		private int memoizedSerializedSize = -1;
 
-      // @@protoc_insertion_point(builder_scope:PersonMessage)
-    }
+		public int getSerializedSize() {
+			int size = memoizedSerializedSize;
+			if (size != -1)
+				return size;
 
-    static {
-      defaultInstance = new PersonMessage(true);
-      defaultInstance.initFields();
-    }
+			size = 0;
+			if (((bitField0_ & 0x00000001) == 0x00000001)) {
+				size += com.google.protobuf.CodedOutputStream.computeBytesSize(1, getNameBytes());
+			}
+			if (((bitField0_ & 0x00000002) == 0x00000002)) {
+				size += com.google.protobuf.CodedOutputStream.computeInt32Size(2, age_);
+			}
+			memoizedSerializedSize = size;
+			return size;
+		}
 
-    // @@protoc_insertion_point(class_scope:PersonMessage)
-  }
+		private static final long serialVersionUID = 0L;
 
+		@java.lang.Override
+		protected java.lang.Object writeReplace() throws java.io.ObjectStreamException {
+			return super.writeReplace();
+		}
 
-  static {
-  }
+		public static org.gigas.protocolbuffer.message.person.PersonMessageFactory.PersonMessage parseFrom(com.google.protobuf.ByteString data) throws com.google.protobuf.InvalidProtocolBufferException {
+			return PARSER.parseFrom(data);
+		}
 
-  // @@protoc_insertion_point(outer_class_scope)
+		public static org.gigas.protocolbuffer.message.person.PersonMessageFactory.PersonMessage parseFrom(com.google.protobuf.ByteString data, com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws com.google.protobuf.InvalidProtocolBufferException {
+			return PARSER.parseFrom(data, extensionRegistry);
+		}
+
+		public static org.gigas.protocolbuffer.message.person.PersonMessageFactory.PersonMessage parseFrom(byte[] data) throws com.google.protobuf.InvalidProtocolBufferException {
+			return PARSER.parseFrom(data);
+		}
+
+		public static org.gigas.protocolbuffer.message.person.PersonMessageFactory.PersonMessage parseFrom(byte[] data, com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws com.google.protobuf.InvalidProtocolBufferException {
+			return PARSER.parseFrom(data, extensionRegistry);
+		}
+
+		public static org.gigas.protocolbuffer.message.person.PersonMessageFactory.PersonMessage parseFrom(java.io.InputStream input) throws java.io.IOException {
+			return PARSER.parseFrom(input);
+		}
+
+		public static org.gigas.protocolbuffer.message.person.PersonMessageFactory.PersonMessage parseFrom(java.io.InputStream input, com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
+			return PARSER.parseFrom(input, extensionRegistry);
+		}
+
+		public static org.gigas.protocolbuffer.message.person.PersonMessageFactory.PersonMessage parseDelimitedFrom(java.io.InputStream input) throws java.io.IOException {
+			return PARSER.parseDelimitedFrom(input);
+		}
+
+		public static org.gigas.protocolbuffer.message.person.PersonMessageFactory.PersonMessage parseDelimitedFrom(java.io.InputStream input, com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
+			return PARSER.parseDelimitedFrom(input, extensionRegistry);
+		}
+
+		public static org.gigas.protocolbuffer.message.person.PersonMessageFactory.PersonMessage parseFrom(com.google.protobuf.CodedInputStream input) throws java.io.IOException {
+			return PARSER.parseFrom(input);
+		}
+
+		public static org.gigas.protocolbuffer.message.person.PersonMessageFactory.PersonMessage parseFrom(com.google.protobuf.CodedInputStream input, com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
+			return PARSER.parseFrom(input, extensionRegistry);
+		}
+
+		public static Builder newBuilder() {
+			return Builder.create();
+		}
+
+		public Builder newBuilderForType() {
+			return newBuilder();
+		}
+
+		public static Builder newBuilder(org.gigas.protocolbuffer.message.person.PersonMessageFactory.PersonMessage prototype) {
+			return newBuilder().mergeFrom(prototype);
+		}
+
+		public Builder toBuilder() {
+			return newBuilder(this);
+		}
+
+		/**
+		 * Protobuf type {@code PersonMessage}
+		 */
+		public static final class Builder extends com.google.protobuf.GeneratedMessageLite.Builder<org.gigas.protocolbuffer.message.person.PersonMessageFactory.PersonMessage, Builder> implements org.gigas.protocolbuffer.message.person.PersonMessageFactory.PersonMessageOrBuilder {
+			// Construct using
+			// org.gigas.protocolbuffer.message.person.PersonMessageFactory.PersonMessage.newBuilder()
+			private Builder() {
+				maybeForceBuilderInitialization();
+			}
+
+			private void maybeForceBuilderInitialization() {
+			}
+
+			private static Builder create() {
+				return new Builder();
+			}
+
+			public Builder clear() {
+				super.clear();
+				name_ = "";
+				bitField0_ = (bitField0_ & ~0x00000001);
+				age_ = 0;
+				bitField0_ = (bitField0_ & ~0x00000002);
+				return this;
+			}
+
+			public Builder clone() {
+				return create().mergeFrom(buildPartial());
+			}
+
+			public org.gigas.protocolbuffer.message.person.PersonMessageFactory.PersonMessage getDefaultInstanceForType() {
+				return org.gigas.protocolbuffer.message.person.PersonMessageFactory.PersonMessage.getDefaultInstance();
+			}
+
+			public org.gigas.protocolbuffer.message.person.PersonMessageFactory.PersonMessage build() {
+				org.gigas.protocolbuffer.message.person.PersonMessageFactory.PersonMessage result = buildPartial();
+				if (!result.isInitialized()) {
+					throw newUninitializedMessageException(result);
+				}
+				return result;
+			}
+
+			public org.gigas.protocolbuffer.message.person.PersonMessageFactory.PersonMessage buildPartial() {
+				org.gigas.protocolbuffer.message.person.PersonMessageFactory.PersonMessage result = new org.gigas.protocolbuffer.message.person.PersonMessageFactory.PersonMessage(this);
+				int from_bitField0_ = bitField0_;
+				int to_bitField0_ = 0;
+				if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+					to_bitField0_ |= 0x00000001;
+				}
+				result.name_ = name_;
+				if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+					to_bitField0_ |= 0x00000002;
+				}
+				result.age_ = age_;
+				result.bitField0_ = to_bitField0_;
+				return result;
+			}
+
+			public Builder mergeFrom(org.gigas.protocolbuffer.message.person.PersonMessageFactory.PersonMessage other) {
+				if (other == org.gigas.protocolbuffer.message.person.PersonMessageFactory.PersonMessage.getDefaultInstance())
+					return this;
+				if (other.hasName()) {
+					bitField0_ |= 0x00000001;
+					name_ = other.name_;
+
+				}
+				if (other.hasAge()) {
+					setAge(other.getAge());
+				}
+				return this;
+			}
+
+			public final boolean isInitialized() {
+				if (!hasName()) {
+
+					return false;
+				}
+				if (!hasAge()) {
+
+					return false;
+				}
+				return true;
+			}
+
+			public Builder mergeFrom(com.google.protobuf.CodedInputStream input, com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
+				org.gigas.protocolbuffer.message.person.PersonMessageFactory.PersonMessage parsedMessage = null;
+				try {
+					parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+				} catch (com.google.protobuf.InvalidProtocolBufferException e) {
+					parsedMessage = (org.gigas.protocolbuffer.message.person.PersonMessageFactory.PersonMessage) e.getUnfinishedMessage();
+					throw e;
+				} finally {
+					if (parsedMessage != null) {
+						mergeFrom(parsedMessage);
+					}
+				}
+				return this;
+			}
+
+			private int bitField0_;
+
+			// required string name = 1;
+			private java.lang.Object name_ = "";
+
+			/**
+			 * <code>required string name = 1;</code>
+			 */
+			public boolean hasName() {
+				return ((bitField0_ & 0x00000001) == 0x00000001);
+			}
+
+			/**
+			 * <code>required string name = 1;</code>
+			 */
+			public java.lang.String getName() {
+				java.lang.Object ref = name_;
+				if (!(ref instanceof java.lang.String)) {
+					java.lang.String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+					name_ = s;
+					return s;
+				} else {
+					return (java.lang.String) ref;
+				}
+			}
+
+			/**
+			 * <code>required string name = 1;</code>
+			 */
+			public com.google.protobuf.ByteString getNameBytes() {
+				java.lang.Object ref = name_;
+				if (ref instanceof String) {
+					com.google.protobuf.ByteString b = com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
+					name_ = b;
+					return b;
+				} else {
+					return (com.google.protobuf.ByteString) ref;
+				}
+			}
+
+			/**
+			 * <code>required string name = 1;</code>
+			 */
+			public Builder setName(java.lang.String value) {
+				if (value == null) {
+					throw new NullPointerException();
+				}
+				bitField0_ |= 0x00000001;
+				name_ = value;
+
+				return this;
+			}
+
+			/**
+			 * <code>required string name = 1;</code>
+			 */
+			public Builder clearName() {
+				bitField0_ = (bitField0_ & ~0x00000001);
+				name_ = getDefaultInstance().getName();
+
+				return this;
+			}
+
+			/**
+			 * <code>required string name = 1;</code>
+			 */
+			public Builder setNameBytes(com.google.protobuf.ByteString value) {
+				if (value == null) {
+					throw new NullPointerException();
+				}
+				bitField0_ |= 0x00000001;
+				name_ = value;
+
+				return this;
+			}
+
+			// required int32 age = 2;
+			private int age_;
+
+			/**
+			 * <code>required int32 age = 2;</code>
+			 */
+			public boolean hasAge() {
+				return ((bitField0_ & 0x00000002) == 0x00000002);
+			}
+
+			/**
+			 * <code>required int32 age = 2;</code>
+			 */
+			public int getAge() {
+				return age_;
+			}
+
+			/**
+			 * <code>required int32 age = 2;</code>
+			 */
+			public Builder setAge(int value) {
+				bitField0_ |= 0x00000002;
+				age_ = value;
+
+				return this;
+			}
+
+			/**
+			 * <code>required int32 age = 2;</code>
+			 */
+			public Builder clearAge() {
+				bitField0_ = (bitField0_ & ~0x00000002);
+				age_ = 0;
+
+				return this;
+			}
+
+			// @@protoc_insertion_point(builder_scope:PersonMessage)
+		}
+
+		static {
+			defaultInstance = new PersonMessage(true);
+			defaultInstance.initFields();
+		}
+
+		// @@protoc_insertion_point(class_scope:PersonMessage)
+	}
+
+	static {
+	}
+
+	// @@protoc_insertion_point(outer_class_scope)
 }

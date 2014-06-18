@@ -10,25 +10,22 @@ import io.netty.util.AttributeKey;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.gigas.core.server.BaseServer;
-import org.gigas.core.server.codec.ProtoBufCustomedDecoder;
-import org.gigas.core.server.message.ProtoBufPackage;
-import org.gigas.core.server.message.dictionary.ProtoBufDictionary;
-
-import com.google.protobuf.MessageLite;
+import org.gigas.core.server.message.ByteMessage;
+import org.gigas.core.server.message.dictionary.ByteMessageDictionary;
 
 /**
- * protobuf消息Hanlder
+ * byte消息Hanlder
  * 
  * @author hank
  * 
  */
 @Sharable
-public class ProtoBufMessageHandler extends ChannelInboundHandlerAdapter {
+public class ByteMessageHandler extends ChannelInboundHandlerAdapter {
 	private BaseServer server;
-	private static Logger log = LogManager.getLogger(ProtoBufMessageHandler.class);
+	private static Logger log = LogManager.getLogger(ByteMessageHandler.class);
 	private final static AttributeKey<ByteBuf> BUFFERKEY = AttributeKey.valueOf("BUFFERKEY");
 
-	public ProtoBufMessageHandler(BaseServer whichserver) {
+	public ByteMessageHandler(BaseServer whichserver) {
 		this.server = whichserver;
 	}
 
@@ -87,34 +84,16 @@ public class ProtoBufMessageHandler extends ChannelInboundHandlerAdapter {
 			final int id = tempBuf.readInt();
 			ByteBuf body = ctx.alloc().directBuffer(length - Integer.SIZE / Byte.SIZE);
 			tempBuf.readBytes(body);
-			final MessageLite message = ((ProtoBufDictionary) server.getMessageDictionary()).getMessage(id).build();
+			ByteMessage message = ((ByteMessageDictionary) server.getMessageDictionary()).getMessage(id);
 			if (message == null) {// 没有找到对应的消息类
 				log.error("id:" + id + " not exist!");
 				// ctx.close();
 				return;
 			}
-			ProtoBufCustomedDecoder protobufDecoder = new ProtoBufCustomedDecoder(message.getDefaultInstanceForType());
-			final MessageLite excuteDecode = protobufDecoder.excuteDecode(id, ctx, body);// 执行解码
+			message._readAll(body);
 			// 得到的消息派发
-			ProtoBufPackage protoBufPackage = new ProtoBufPackage() {
-
-				@Override
-				public int getId() {
-					return id;
-				}
-
-				@Override
-				public Class<? extends MessageLite> getClazz() {
-					return message.getClass();
-				}
-
-				@Override
-				public MessageLite build() {
-					return excuteDecode;
-				}
-			};
-			protoBufPackage.setSrcChannel(ctx.channel());
-			server.addHandleTask(protoBufPackage);
+			message.setSrcChannel(ctx.channel());
+			server.addHandleTask(message);
 			tempBuf.discardReadBytes();// 丢弃已读取字节
 		} catch (Exception e) {
 			log.error(e, e);

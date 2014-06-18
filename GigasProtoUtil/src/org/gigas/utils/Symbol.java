@@ -1,6 +1,5 @@
 package org.gigas.utils;
 
-
 /**
  * 符号
  * 

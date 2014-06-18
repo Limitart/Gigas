@@ -19,20 +19,12 @@ import com.google.protobuf.MessageLite;
  * @author hank
  * 
  */
-public abstract class ProtoBufDictionary {
+public abstract class ProtoBufDictionary implements IMessageDictionary<Object, IProtobufHandler> {
 	private static Logger log = LogManager.getLogger(ProtoBufDictionary.class);
 	private HashMap<Integer, ProtoBufPackage> id_messageMap = new HashMap<>();
 	private HashMap<Integer, Class<? extends IProtobufHandler>> id_handlerMap = new HashMap<>();
 
-	/**
-	 * 获得消息类
-	 * 
-	 * @param id
-	 * @return
-	 * @throws MessageException
-	 * @throws IllegalAccessException
-	 * @throws InstantiationException
-	 */
+	@Override
 	@SuppressWarnings("rawtypes")
 	public Builder getMessage(final int id) throws MessageException, InstantiationException, IllegalAccessException {
 		if (!id_messageMap.containsKey(id)) {
@@ -46,47 +38,23 @@ public abstract class ProtoBufDictionary {
 			result = (Builder) declaredMethod.invoke(null);
 		} catch (NoSuchMethodException e) {
 			e.printStackTrace();
+			log.error(e, e);
 		} catch (SecurityException e) {
-			e.printStackTrace();
+			log.error(e, e);
 		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
+			log.error(e, e);
 		} catch (InvocationTargetException e) {
-			e.printStackTrace();
+			log.error(e, e);
 		}
 		return result;
 	}
 
-	/**
-	 * 获取hanlder
-	 * 
-	 * @param id
-	 * @return
-	 * @throws MessageException
-	 * @throws InstantiationException
-	 * @throws IllegalAccessException
-	 */
+	@Override
 	public IProtobufHandler getHandler(final int id) throws MessageException, InstantiationException, IllegalAccessException {
 		if (!id_handlerMap.containsKey(id)) {
 			throw new MessageException("id:" + id + " handler not exist!");
 		}
 		return id_handlerMap.get(id).newInstance();
-	}
-
-	/**
-	 * 注册消息
-	 * 
-	 * @param id
-	 * @param messageClass
-	 * @param handlerClass
-	 */
-	public void register(final int id, final Class<? extends MessageLite> messageLite, Class<? extends IProtobufHandler> handlerClass) {
-		try {
-			putMessage(id, messageLite);
-			putHanlder(id, handlerClass);
-		} catch (MessageException e) {
-			log.error(e, e);
-		}
-
 	}
 
 	/**
@@ -133,8 +101,19 @@ public abstract class ProtoBufDictionary {
 		id_handlerMap.put(id, clazz);
 	}
 
-	/**
-	 * 注册所有消息
-	 */
+	public void register_proto(final int id, Class<? extends MessageLite> messageLite, Class<? extends IProtobufHandler> handlerClass) throws MessageException {
+		putMessage(id, messageLite);
+		putHanlder(id, handlerClass);
+
+	}
+
+	@Override
+	@Deprecated
+	public void register(int id, Class<? extends Object> messageLite, Class<? extends IProtobufHandler> handlerClass) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
 	public abstract void registerAllMessage();
 }

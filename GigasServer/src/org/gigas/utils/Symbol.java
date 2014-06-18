@@ -7,6 +7,9 @@ package org.gigas.utils;
  * 
  */
 public class Symbol {
+	private Symbol() {
+	}
+
 	/**
 	 * 分号
 	 */

@@ -36,6 +36,7 @@ public abstract class ProtoBufPackage implements IMessage {
 
 	/**
 	 * 添加需要发送的channel列表
+	 * 
 	 * @param list
 	 */
 	public void addSendChannelAll(List<Channel> list) {

@@ -11,7 +11,8 @@ import org.gigas.core.exception.MessageException;
 public interface IServer {
 	/**
 	 * 初始化服务器
-	 * @throws MessageException 
+	 * 
+	 * @throws MessageException
 	 */
 	public void startServer() throws MessageException;
 
