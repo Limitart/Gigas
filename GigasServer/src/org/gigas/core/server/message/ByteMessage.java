@@ -19,14 +19,11 @@ public abstract class ByteMessage implements IMessage {
 
 	protected List<Channel> sendChannelList = new LinkedList<Channel>();
 	protected Channel srcChannel;
-	protected Class<? extends ByteMessage> Clazz;
 
 	// abstract method
 	public abstract boolean _writeAll(ByteBuf buf);
 
 	public abstract boolean _readAll(ByteBuf buf);
-
-	public abstract Class<? extends ByteMessage> _getClazz();
 
 	// impl method
 	protected void _putString(ByteBuf buf, String value) {
@@ -79,6 +76,9 @@ public abstract class ByteMessage implements IMessage {
 	protected String _getString(ByteBuf buf) {
 		int length = buf.readInt();
 		if (length < 1) {
+			return null;
+		}
+		if (buf.readableBytes() < length) {
 			return null;
 		}
 		byte[] bytes = new byte[length];
@@ -165,13 +165,4 @@ public abstract class ByteMessage implements IMessage {
 	public void setSrcChannel(Channel srcChannel) {
 		this.srcChannel = srcChannel;
 	}
-
-	public Class<? extends ByteMessage> getClazz() {
-		return Clazz;
-	}
-
-	public void setClazz(Class<? extends ByteMessage> clazz) {
-		Clazz = clazz;
-	}
-
 }
