@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/GigasServer"/>
+	<classpathentry kind="lib" path="/GigasLib/lib/commons-lang3-3.3.2.jar"/>
+	<classpathentry kind="lib" path="/GigasLib/lib/jdom-2.0.5.jar"/>
+	<classpathentry kind="lib" path="/GigasLib/lib/log4j-api-2.0-rc1.jar"/>
+	<classpathentry kind="lib" path="/GigasLib/lib/log4j-core-2.0-rc1.jar"/>
+	<classpathentry kind="lib" path="/GigasLib/lib/netty-all-4.0.19.Final.jar" sourcepath="/GigasLib/libsource/netty-all-4.0.19.Final-sources.jar"/>
+	<classpathentry kind="lib" path="/GigasLib/lib/protobuf-java-2.5.0.jar"/>
+	<classpathentry kind="lib" path="/GigasLib/lib/quartz-2.2.1.jar"/>
+	<classpathentry kind="lib" path="/GigasLib/lib/quartz-jobs-2.2.1.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
